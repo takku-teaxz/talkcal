@@ -73,7 +73,9 @@
   font-weight:700;
 }
 </style>
-</head>
+<style>
+.singleCal{margin-top:12px}.singleDay{min-height:45px;border:1px solid var(--line);border-radius:11px;background:#fff;font-weight:800;color:#444}.singleDay.blank{visibility:hidden}.singleDay.on{background:var(--p);color:#fff;border-color:var(--p);box-shadow:0 6px 14px rgba(105,84,220,.2)}
+</style></head>
 <body>
 <main class="app">
 <section id="home" class="screen active">
@@ -108,6 +110,11 @@
     <div id="dateFieldWrap">
       <label id="dateLabel">日付</label>
       <input class="field" id="dateInput" inputmode="numeric" autocomplete="off" placeholder="例：9/20">
+      <div id="singleCal" class="singleCal">
+        <div class="bulkTools"><button class="tiny" id="singlePrev" type="button">←</button><b id="singleMonth"></b><button class="tiny" id="singleNext" type="button">→</button></div>
+        <div class="week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+        <div class="grid" id="singleGrid"></div>
+      </div>
     </div>
     <div class="row">
       <div id="startFieldWrap"><label>時間</label><input class="field" id="startInput" type="text" inputmode="numeric" autocomplete="off" placeholder="例：15:00" maxlength="5"></div>
@@ -203,6 +210,7 @@ const W={'日':0,'月':1,'火':2,'水':3,'木':4,'金':5,'土':6};
 let ev=JSON.parse(localStorage.getItem('tc_hybrid_v2_ev')||'[]');
 let tasks=JSON.parse(localStorage.getItem('tc_hybrid_v2_tasks')||'[]');
 let type='single', repeatKind='daily', cy=now.getFullYear(), cm=now.getMonth(), selectedDay=null;
+let singleY=now.getFullYear(), singleM=now.getMonth();
 let bulkY=now.getFullYear(), bulkM=now.getMonth(), bulkDates=new Set(), weeklyDays=new Set();
 let pendingRisk=[];
 const save=()=>{localStorage.setItem('tc_hybrid_v2_ev',JSON.stringify(ev));localStorage.setItem('tc_hybrid_v2_tasks',JSON.stringify(tasks))};
@@ -368,8 +376,29 @@ function examples(){
   let addLabel=document.getElementById('quickAddLabel'),hint=document.getElementById('addActionHint');
   if(addLabel)addLabel.textContent=type==='deadline'?'締切を追加する':type==='bulk'?'選んだ日すべてに追加する':type==='repeat'?'繰り返し予定を追加する':'この予定を追加する';
   if(hint)hint.textContent=type==='deadline'?'締切リストに反映します':type==='bulk'?'選択したすべての日に反映します':'入力した内容をカレンダーに反映します';
+  let singleCal=document.getElementById('singleCal');
+  if(singleCal)singleCal.style.display=type==='single'?'block':'none';
+  if(type==='single')renderSingleCal();
   if(type==='bulk')renderBulk()
 }
+
+function singleInputKey(){
+  let v=document.getElementById('dateInput').value.trim(), m=v.match(/^(\d{1,2})[\/\-](\d{1,2})$/);
+  if(!m)return null;
+  let dt=new Date(now.getFullYear(),+m[1]-1,+m[2]);
+  if(dt.getMonth()!==+m[1]-1||dt.getDate()!==+m[2])return null;
+  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+}
+function renderSingleCal(){
+  let box=document.getElementById('singleGrid'),label=document.getElementById('singleMonth');if(!box||!label)return;
+  label.textContent=`${singleY}年 ${singleM+1}月`;
+  let first=new Date(singleY,singleM,1),last=new Date(singleY,singleM+1,0),selected=singleInputKey(),html='';
+  for(let i=0;i<first.getDay();i++)html+='<button class="singleDay blank" type="button"></button>';
+  for(let d=1;d<=last.getDate();d++){let dt=new Date(singleY,singleM,d),k=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;html+=`<button class="singleDay${k===selected?' on':''}" type="button" data-single-date="${k}">${d}</button>`}
+  box.innerHTML=html;
+  box.querySelectorAll('[data-single-date]').forEach(b=>b.onclick=()=>{let dt=new Date(b.dataset.singleDate+'T00:00:00');document.getElementById('dateInput').value=`${dt.getMonth()+1}/${dt.getDate()}`;renderSingleCal()});
+}
+
 function renderBulk(){
   document.getElementById('bulkMonth').textContent=`${bulkY}年 ${bulkM+1}月`;
   let g=document.getElementById('bulkGrid');g.innerHTML='';
@@ -462,6 +491,9 @@ document.getElementById('endOverride').addEventListener('blur',e=>{
   if(n)e.target.value=n;
 });
 document.querySelectorAll('[data-rw]').forEach(b=>b.onclick=()=>{let d=+b.dataset.rw;weeklyDays.has(d)?weeklyDays.delete(d):weeklyDays.add(d);b.classList.toggle('on',weeklyDays.has(d))})
+document.getElementById('singlePrev').onclick=()=>{if(--singleM<0){singleM=11;singleY--}renderSingleCal()}
+document.getElementById('singleNext').onclick=()=>{if(++singleM>11){singleM=0;singleY++}renderSingleCal()}
+document.getElementById('dateInput').addEventListener('input',()=>{let v=document.getElementById('dateInput').value.trim(),m=v.match(/^(\d{1,2})[\/\-](\d{1,2})$/);if(m){singleM=+m[1]-1;singleY=now.getFullYear()}renderSingleCal()})
 document.getElementById('bulkPrev').onclick=()=>{if(--bulkM<0){bulkM=11;bulkY--}renderBulk()}
 document.getElementById('bulkNext').onclick=()=>{if(++bulkM>11){bulkM=0;bulkY++}renderBulk()}
 document.getElementById('forceAdd').onclick=()=>{pendingRisk.forEach(p=>ev.push(p.x));let n=pendingRisk.length;pendingRisk=[];save();render();renderConflict();clearAddInput();notice(`${n}件そのまま追加したよ`)};
@@ -488,7 +520,7 @@ document.getElementById('next').onclick=()=>{if(++cm>11){cm=0;cy++}calendar();do
 function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id))}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>show(b.dataset.tab));
 function render(){home();calendar()}
-examples();render();
+examples();renderSingleCal();render();
 </script>
 </body>
 </html>
