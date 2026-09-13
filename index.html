@@ -33,7 +33,47 @@
 .answerCard{align-self:stretch;background:#fff;border:1px solid var(--line);border-radius:18px;padding:10px;box-shadow:0 7px 18px rgba(70,60,130,.05)}.answerHead{font-weight:900;margin:2px 4px 8px}.dayGroup{display:grid;grid-template-columns:66px 1fr;gap:8px;padding:9px 5px;border-top:1px solid var(--line)}.dayGroup:first-of-type{border-top:0}.dayLabel{font-weight:900}.dayLabel small{display:block;color:var(--muted);font-size:11px}.dayItems{display:flex;flex-direction:column;gap:4px}.dayEvent{display:grid;grid-template-columns:82px 1fr;gap:7px;font-size:13px}.dayEvent b{font-weight:800}.freeCard{align-self:stretch;background:#eefaf3;border:1px solid #d8f1e1;border-radius:18px;padding:13px}.freeCard b{color:#238553}.chat{max-height:58vh}.msg.aiIntro{background:#efeff7}
 
 </style>
-<style>.day.selected{background:var(--p)!important;color:#fff!important;box-shadow:0 6px 14px rgba(105,84,220,.22)}.day.selected .dot{background:#fff!important}</style></head>
+<style>.day.selected{background:var(--p)!important;color:#fff!important;box-shadow:0 6px 14px rgba(105,84,220,.22)}.day.selected .dot{background:#fff!important}</style>
+<style>
+/* v15: clear primary action */
+.addAction{
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+}
+.primaryAddBtn{
+  width:100%;
+  min-height:58px;
+  border:0;
+  border-radius:18px;
+  background:linear-gradient(135deg,#6954dc,#8b7cff);
+  color:#fff;
+  font-size:17px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  box-shadow:0 12px 26px rgba(105,84,220,.28);
+  cursor:pointer;
+  touch-action:manipulation;
+}
+.primaryAddBtn:active{transform:scale(.985);box-shadow:0 7px 16px rgba(105,84,220,.22)}
+.primaryAddIcon{
+  width:26px;height:26px;border-radius:50%;
+  background:rgba(255,255,255,.2);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:21px;line-height:1;
+}
+.addActionHint{
+  text-align:center;
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+</style>
+</head>
 <body>
 <main class="app">
 <section id="home" class="screen active">
@@ -73,7 +113,6 @@
       <div id="startFieldWrap"><label>時間</label><input class="field" id="startInput" type="text" inputmode="numeric" autocomplete="off" placeholder="例：15:00" maxlength="5"></div>
       <div><label>内容</label><input class="field" id="titleInput" autocomplete="off" placeholder="例：病院"></div>
     </div>
-    <button class="addbtn" id="quickAdd" style="width:100%;margin-top:12px">追加</button>
     <div class="example" id="example"></div>
     <div class="notice" id="notice"></div>
     <div id="bulkCal" class="bulkCal">
@@ -108,6 +147,14 @@
       <label>メモ</label><input class="field" id="memo" placeholder="任意">
       <div class="subtle" style="margin-top:8px">終了日の指定がなければ当日として扱うよ。夜勤や泊まりは「翌日」を選択。</div>
     </details>
+
+    <div class="addAction">
+      <button class="primaryAddBtn" id="quickAdd" type="button">
+        <span class="primaryAddIcon">＋</span>
+        <span id="quickAddLabel">この予定を追加する</span>
+      </button>
+      <div class="addActionHint" id="addActionHint">入力した内容をカレンダーに反映します</div>
+    </div>
   </div>
 </section>
 
@@ -318,6 +365,9 @@ function examples(){
   document.getElementById('bulkCal').classList.toggle('show',type==='bulk');
   let msg={single:'日付・時間・内容をそれぞれ入力',repeat:'ルールを選んで、時間・内容を入力',bulk:'日付を複数選んで、時間・内容を入力',deadline:'締切日・内容を入力'};
   document.getElementById('example').innerHTML=`<b>かんたん入力：</b> ${msg[type]}`;
+  let addLabel=document.getElementById('quickAddLabel'),hint=document.getElementById('addActionHint');
+  if(addLabel)addLabel.textContent=type==='deadline'?'締切を追加する':type==='bulk'?'選んだ日すべてに追加する':type==='repeat'?'繰り返し予定を追加する':'この予定を追加する';
+  if(hint)hint.textContent=type==='deadline'?'締切リストに反映します':type==='bulk'?'選択したすべての日に反映します':'入力した内容をカレンダーに反映します';
   if(type==='bulk')renderBulk()
 }
 function renderBulk(){
