@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>TalkCal</title>
+<title>TalkCal v23</title>
 <style>
 :root{--bg:#f7f7fb;--card:#fff;--ink:#252532;--muted:#8a8d98;--line:#e9e9f0;--p:#7468f6;--soft:#efefff}
 *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#efedff 0,#f8f8fc 30%,#f7f7fb 100%);font-family:system-ui,-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--ink)}
-.app{max-width:480px;margin:auto;min-height:100vh;padding:18px 14px 110px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.logo{font-size:28px;font-weight:900}.logo i{font-style:normal;color:var(--p)}.avatar{width:44px;height:44px;border-radius:15px;background:#fff;display:grid;place-items:center;border:1px solid var(--line);font-size:21px}
+.versionBadge{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:9999;background:#17131f;color:#fff;border-radius:999px;padding:5px 10px;font-size:10px;font-weight:900;letter-spacing:.4px;box-shadow:0 4px 14px #0002}.app{max-width:480px;margin:auto;min-height:100vh;padding:18px 14px 110px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.logo{font-size:28px;font-weight:900}.logo i{font-style:normal;color:var(--p)}.avatar{width:44px;height:44px;border-radius:15px;background:#fff;display:grid;place-items:center;border:1px solid var(--line);font-size:21px}
 .card{background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:24px;padding:17px;margin-bottom:13px;box-shadow:0 12px 28px rgba(65,55,130,.055)}
 .hero{background:linear-gradient(135deg,#7468f6,#a8a1ff);color:#fff;border:0}.hero small{opacity:.86}.hero h1{font-size:29px;margin:5px 0}.hero p{margin:0;opacity:.93;line-height:1.5}
 .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.head span{font-size:12px;color:var(--muted)}.screen{display:none}.screen.active{display:block}
@@ -85,7 +85,7 @@
 .directDate summary{cursor:pointer;font-size:13px;font-weight:800;color:var(--muted)}
 </style>
 <style>
-/* v22: shared groups / friend prototype */
+/* v23: visible release marker + shared groups / friend prototype */
 :root{--pink:#f0719b;--blue:#65a4ee;--green:#45b987;--warn:#d85d67}
 .nav{grid-template-columns:repeat(5,minmax(0,1fr))}.nav button{font-size:10px;padding:7px 1px}.nav button b{font-size:18px}
 .spaceStrip{display:flex;gap:8px;overflow:auto;padding:2px 0 4px}.spacePill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;white-space:nowrap;font-size:12px;font-weight:900;color:#666}.spacePill.on{background:var(--soft);border-color:#cfc9ff;color:var(--p)}
@@ -96,6 +96,7 @@
 </style>
 </head>
 <body>
+<div class="versionBadge">TalkCal v23 ・ GROUP BUILD</div>
 <main class="app">
 <section id="home" class="screen active">
   <div class="top"><div class="logo">Talk<i>Cal</i></div><div class="avatar">👧🏻</div></div>
@@ -286,8 +287,8 @@ const defaultGroups=()=>[
   {id:'g_partner',name:'彼女',icon:'💗',members:['あなた','みーちゃん'],invite:'LOVE26'},
   {id:'g_friends',name:'友達',icon:'👥',members:['あなた','友達A','友達B'],invite:'FRIEND'}
 ];
-let groups=JSON.parse(localStorage.getItem('tc_hybrid_v22_groups')||'null')||defaultGroups();
-let sharedEv=JSON.parse(localStorage.getItem('tc_hybrid_v22_shared')||'[]');
+let groups=JSON.parse(localStorage.getItem('tc_hybrid_v23_groups')||localStorage.getItem('tc_hybrid_v22_groups')||'null')||defaultGroups();
+let sharedEv=JSON.parse(localStorage.getItem('tc_hybrid_v23_shared')||localStorage.getItem('tc_hybrid_v22_shared')||'[]');
 let type='single', repeatKind='daily', cy=now.getFullYear(), cm=now.getMonth(), selectedDay=null;
 let singleY=now.getFullYear(), singleM=now.getMonth();
 let bulkY=now.getFullYear(), bulkM=now.getMonth(), bulkDates=new Set(), weeklyDays=new Set();
@@ -295,8 +296,8 @@ let pendingRisk=[],addScope='private',currentGroupId=null;
 const save=()=>{
   localStorage.setItem('tc_hybrid_v2_ev',JSON.stringify(ev));
   localStorage.setItem('tc_hybrid_v2_tasks',JSON.stringify(tasks));
-  localStorage.setItem('tc_hybrid_v22_groups',JSON.stringify(groups));
-  localStorage.setItem('tc_hybrid_v22_shared',JSON.stringify(sharedEv));
+  localStorage.setItem('tc_hybrid_v23_groups',JSON.stringify(groups));
+  localStorage.setItem('tc_hybrid_v23_shared',JSON.stringify(sharedEv));
 };
 const allEvents=()=>[...ev.map(x=>({...x,shared:false})),...sharedEv.map(x=>({...x,shared:true}))];
 const groupById=id=>groups.find(g=>g.id===id);
@@ -440,7 +441,7 @@ function renderConflict(){
   document.getElementById('conflictList').innerHTML=pendingRisk.map(p=>`<div class="conflictItem"><b>${fmt(p.x.date)} ${p.x.start}　${esc(p.x.title)}</b><br>${p.hits.map(h=>`${h.kind==='overlap'?'時間帯が重複':'前後1時間以内'}：${h.event.start}〜${endLabel(h.event)} ${esc(h.event.title)} <span class="sourceTag ${h.event.shared?'':'private'}">${esc(sourceLabel(h.event))}</span>`).join('<br>')}<div class="eventConflict">🔒 この重複情報はあなたにだけ表示</div></div>`).join('');
 }
 function clearAddInput(){
-  // v22 微調整①: 日付が紫で選択されたままなら、内部の日付も保持する。
+  // v23 微調整①: 日付が紫で選択されたままなら、内部の日付も保持する。
   // 同じ日に続けて予定を入れる時、日付を毎回選び直さなくていい。
   document.getElementById('startInput').value='';
   document.getElementById('titleInput').value='';
