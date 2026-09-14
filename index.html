@@ -337,20 +337,36 @@ function parseQuick(){
   }
 }
 function riskFor(x){
-  let xs=dateAt(x.date,x.start);
+  let [xs,xe]=eventRange(x);
   return ev.map(y=>{
-    let exact=(x.endExplicit&&y.endExplicit&&overlap(x,y));
-    let near=Math.abs(xs-dateAt(y.date,y.start))<=60*60*1000;
-    return (exact||near)?{event:y,kind:exact?'overlap':'near'}:null
+    let [ys,ye]=eventRange(y);
+
+    // If both schedules have an explicitly entered end time, use the full
+    // start-to-end ranges. This catches cases such as an existing
+    // 10:00〜12:00 event and a new 11:30 event.
+    let exact=(x.endExplicit&&y.endExplicit&&xs<ye&&ys<xe);
+
+    // When only one side has a known end time, also protect that known range:
+    // if the unknown-duration event STARTS inside it, warn instead of silently adding.
+    let insideKnown=
+      (!x.endExplicit&&y.endExplicit&&xs>=ys&&xs<ye) ||
+      (x.endExplicit&&!y.endExplicit&&ys>=xs&&ys<xe);
+
+    // Fallback for schedules without enough duration information.
+    let near=Math.abs(xs-ys)<=60*60*1000;
+
+    return exact?{event:y,kind:'overlap'}:
+           insideKnown?{event:y,kind:'inside'}:
+           near?{event:y,kind:'near'}:null;
   }).filter(Boolean)
 }
 function renderConflict(){
   let box=document.getElementById('conflictBox');
   if(!pendingRisk.length){box.classList.remove('show');document.getElementById('moveArea').innerHTML='';return}
   box.classList.add('show');
-  let hasOverlap=pendingRisk.some(p=>p.hits.some(h=>h.kind==='overlap'));
+  let hasOverlap=pendingRisk.some(p=>p.hits.some(h=>h.kind==='overlap'||h.kind==='inside'));
   document.getElementById('conflictTitle').textContent=hasOverlap?'🔴 予定が重なっています':'🟡 近い予定があります';
-  document.getElementById('conflictList').innerHTML=pendingRisk.map(p=>`<div class="conflictItem"><b>${fmt(p.x.date)} ${p.x.start}　${esc(p.x.title)}</b><br>${p.hits.map(h=>`${h.kind==='overlap'?'重複':'前後1時間以内'}：${h.event.start}〜${endLabel(h.event)} ${esc(h.event.title)}`).join('<br>')}</div>`).join('');
+  document.getElementById('conflictList').innerHTML=pendingRisk.map(p=>`<div class="conflictItem"><b>${fmt(p.x.date)} ${p.x.start}　${esc(p.x.title)}</b><br>${p.hits.map(h=>`${h.kind==='overlap'?'重複':h.kind==='inside'?'予定時間内':'前後1時間以内'}：${h.event.start}〜${endLabel(h.event)} ${esc(h.event.title)}`).join('<br>')}</div>`).join('');
 }
 function clearAddInput(){document.getElementById('dateInput').value='';document.getElementById('startInput').value='';document.getElementById('titleInput').value='';document.getElementById('endOverride').value='';document.getElementById('endDayOffset').value='0';document.getElementById('memo').value='';if(type==='bulk'){bulkDates.clear();renderBulk()}}
 function quickAdd(){
