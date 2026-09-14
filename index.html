@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>TalkCal v24</title>
+<title>TalkCal v25</title>
 <style>
 :root{--bg:#f7f7fb;--card:#fff;--ink:#252532;--muted:#8a8d98;--line:#e9e9f0;--p:#7468f6;--soft:#efefff}
 *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#efedff 0,#f8f8fc 30%,#f7f7fb 100%);font-family:system-ui,-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--ink)}
@@ -98,16 +98,31 @@
 /* v24 additions */
 .event.shared{border-radius:14px;padding-left:7px;padding-right:7px;margin:2px 0}.event.shared .bar{background:var(--event-color,var(--p))}.sourceTag{display:inline-flex;align-items:center;border-radius:999px;padding:3px 7px;font-size:10px;font-weight:900;margin-left:4px;background:#f2f2f7;color:#666}.sourceTag.private{background:#f2f2f7;color:#666}.event.shared .sourceTag{background:color-mix(in srgb,var(--event-color,var(--p)) 14%,white);color:var(--event-color,var(--p))}.dots{height:9px;display:flex;gap:2px;justify-content:center;align-items:center;margin-top:3px}.dot{width:6px;height:6px;border-radius:50%;margin:0}.groupDay{position:relative;min-height:55px;border:1px solid var(--line);border-radius:12px;background:#fff;font-weight:800}.groupDay.has{background:#faf9ff}.groupDay .dot{margin:4px auto 0}.colorPicker{display:flex;gap:10px;flex-wrap:wrap}.colorChoice{width:34px;height:34px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px #ddd;cursor:pointer}.colorChoice.on{box-shadow:0 0 0 3px #302b46}.inviteLink{padding:11px 12px;border:1px solid var(--line);background:#fafafd;border-radius:13px;font-size:11px;line-height:1.45;word-break:break-all;color:#5f6070}.inviteBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.groupCard{border-left:5px solid var(--group-color,var(--p))}.groupHero{position:relative;overflow:hidden}.groupHero:after{content:'';position:absolute;right:-25px;bottom:-45px;width:125px;height:125px;border-radius:50%;background:var(--group-color,var(--p));opacity:.12}.groupEvent{border-left:5px solid var(--group-color,var(--p));padding-left:12px}.calendarLegend{display:flex;gap:8px;flex-wrap:wrap;font-size:10px;color:var(--muted);margin-top:8px}.legendItem{display:flex;align-items:center;gap:4px}.legendDot{width:7px;height:7px;border-radius:50%}
 </style>
+<style>
+/* v25: active deadlines are visible but never occupy time */
+.taskDiamond,.legendTask{width:7px;height:7px;border-radius:2px;display:inline-block;transform:rotate(45deg);background:var(--p)}
+.legendDot{background:var(--p)}
+.taskEvent{border-radius:14px;padding-left:7px;padding-right:7px;margin:2px 0;background:linear-gradient(90deg,color-mix(in srgb,var(--task-color,var(--p)) 8%,white),white 46%)}
+.taskEvent .bar{background:var(--task-color,var(--p))}
+.taskEvent .time{font-size:18px}
+.taskMeta{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.45}
+.taskSource{display:inline-flex;padding:2px 6px;border-radius:999px;font-size:10px;font-weight:900;background:color-mix(in srgb,var(--task-color,var(--p)) 12%,white);color:var(--task-color,var(--p))}
+.groupTaskBlock{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.groupTaskCard{border:1px solid var(--line);border-left:5px solid var(--task-color,var(--p));border-radius:16px;padding:12px;margin-top:8px;background:linear-gradient(90deg,color-mix(in srgb,var(--task-color,var(--p)) 8%,white),white 55%)}
+.groupTaskTitle{font-size:15px;font-weight:900}.groupTaskMeta{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5}.groupTaskTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.groupDay .marks{height:10px;display:flex;gap:3px;justify-content:center;align-items:center;margin-top:4px}.groupDay .marks .dot{margin:0}.groupDay .marks .taskDiamond{width:6px;height:6px}
+.day.selected .taskDiamond{background:#fff!important}
+</style>
 </head>
 <body>
-<div class="versionBadge">TalkCal v24 ・ GROUP CALENDAR</div>
+<div class="versionBadge">TalkCal v25 ・ ACTIVE DEADLINES</div>
 <main class="app">
 <section id="home" class="screen active">
   <div class="top"><div class="logo">Talk<i>Cal</i></div><div class="avatar">👧🏻</div></div>
   <div class="card hero"><small id="date"></small><h1>今日どうする？</h1><p id="summary">予定を確認してるよ。</p></div>
   <div class="card"><div class="head"><b>表示中：プライベート</b><span>共有予定もここに集約</span></div><div class="spaceStrip" id="homeSpaces"></div></div>
   <div class="card"><div class="head"><b>今日の予定</b><span id="todayN"></span></div><div id="todayList"></div></div>
-  <div class="card"><div class="head"><b>締切</b><span id="taskN"></span></div><div id="tasks"></div></div>
+  <div class="card"><div class="head"><b>締切・進行中</b><span id="taskN"></span></div><div class="subtle" style="margin:-3px 0 8px">登録日から締切日まで表示。時間は占有しません。</div><div id="tasks"></div></div>
 </section>
 
 <section id="add" class="screen">
@@ -215,7 +230,7 @@
   <div class="card">
     <div class="head"><b>グループを作る</b><span>LINEグループ感覚</span></div>
     <div class="groupCreate"><input class="field" id="newGroupName" placeholder="例：家族 / 旅行メンバー"><button class="primaryMini" id="createGroup" type="button">作成</button></div>
-    <div class="localOnly">このv24は共有UI・ローカル動作確認版。招待リンクは作成できます。本当の別端末同期はバックエンド接続時に有効化します。</div>
+    <div class="localOnly">このv25は共有UI・進行中締切のローカル動作確認版。招待リンクは作成できます。本当の別端末同期はバックエンド接続時に有効化します。</div>
   </div>
 </section>
 
@@ -230,11 +245,13 @@
     <div class="bulkTools"><button class="tiny" id="groupPrev" type="button">←</button><b id="groupMonthLabel"></b><button class="tiny" id="groupNext" type="button">→</button></div>
     <div class="week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
     <div class="grid" id="groupGrid"></div>
-    <div class="selectedDateNote">このグループの予定だけを表示</div>
+    <div class="calendarLegend"><span class="legendItem"><i class="legendDot"></i>予定</span><span class="legendItem"><i class="legendTask"></i>進行中の締切</span></div>
+    <div class="selectedDateNote">● 予定　◆ 締切（時間は占有しない）</div>
   </div>
   <div class="card">
     <div class="head"><b>このグループの予定</b><span id="groupEventCount"></span></div>
     <div id="groupEvents"></div>
+    <div class="groupTaskBlock"><div class="head"><b>進行中の締切</b><span id="groupTaskCount"></span></div><div id="groupTasks"></div></div>
     <button class="primaryAddBtn" id="addToCurrentGroup" type="button" style="margin-top:14px;min-height:52px"><span class="primaryAddIcon">＋</span><span>このグループに予定を追加</span></button>
   </div>
   <div class="card">
@@ -273,6 +290,7 @@
     <div class="head"><button class="tiny" id="prev">←</button><b id="month"></b><button class="tiny" id="next">→</button></div>
     <div class="week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
     <div class="grid" id="grid"></div>
+    <div class="calendarLegend"><span class="legendItem"><i class="legendDot"></i>予定</span><span class="legendItem"><i class="legendTask"></i>進行中の締切</span></div>
   </div>
   <div class="card daydetail" id="dayDetail">
     <div class="daytitle" id="dayTitle"></div>
@@ -299,6 +317,7 @@ const mins=t=>{let[a,b]=t.split(':').map(Number);return a*60+b};
 const W={'日':0,'月':1,'火':2,'水':3,'木':4,'金':5,'土':6};
 let ev=JSON.parse(localStorage.getItem('tc_hybrid_v2_ev')||'[]');
 let tasks=JSON.parse(localStorage.getItem('tc_hybrid_v2_tasks')||'[]');
+tasks=tasks.map(t=>({...t,start:t.start||todayKey,scope:t.scope||'private'}));
 const defaultGroups=()=>[
   {id:'g_partner',name:'彼女',icon:'💗',color:'#e56f9a',members:['あなた','みーちゃん'],invite:'LOVE26'},
   {id:'g_friends',name:'友達',icon:'👥',color:'#5b9ee6',members:['あなた','友達A','友達B'],invite:'FRIEND'}
@@ -321,6 +340,17 @@ const allEvents=()=>[...ev.map(x=>({...x,shared:false})),...sharedEv.map(x=>({..
 const groupById=id=>groups.find(g=>g.id===id);
 const sourceLabel=e=>e.shared?(groupById(e.groupId)?.name||'共有'):'プライベート';
 const sourceColor=e=>e.shared?(groupById(e.groupId)?.color||'#7468f6'):'#7468f6';
+const taskStart=t=>t.start||todayKey;
+const taskScope=t=>t.scope||'private';
+const taskGroup=t=>taskScope(t)==='private'?null:groupById(taskScope(t));
+const taskColor=t=>taskGroup(t)?.color||'#7468f6';
+const taskSourceLabel=t=>taskGroup(t)?.name||'プライベート';
+function taskActiveOn(t,k){return !t.done&&taskStart(t)<=k&&k<=t.deadline}
+function taskDaysLeft(t,k){let a=new Date(k+'T00:00:00'),b=new Date(t.deadline+'T00:00:00');return Math.max(0,Math.round((b-a)/86400000))}
+function taskStatus(t,k){return k===t.deadline?'🚩 本日締切':`📋 進行中・あと${taskDaysLeft(t,k)}日`}
+function activeTasksOn(k,scope=null){return tasks.filter(t=>taskActiveOn(t,k)&&(!scope||taskScope(t)===scope))}
+function renderTaskRow(t,k,withDone=false){let c=taskColor(t);return `<div class="event taskEvent" style="--task-color:${c}"><div class="time">📋</div><div class="bar"></div><div><div class="title">${esc(t.title)} <span class="taskSource" style="--task-color:${c}">${esc(taskSourceLabel(t))}</span></div><div class="taskMeta">${taskStatus(t,k)} ・ ${fmt(taskStart(t))} → ${fmt(t.deadline)}<br>時間を占有しないタスク</div></div>${withDone?`<button class="tiny" data-done="${t.id}">完了</button>`:'<span></span>'}</div>`}
+
 function privateConflictForShared(e){return !!e.shared&&ev.some(p=>overlap(e,p))}
 function storeEvent(x){if(x.shared||x.groupId)sharedEv.push({...x,shared:true});else ev.push({...x,shared:false})}
 function removeEvent(id,shared){if(shared)sharedEv=sharedEv.filter(e=>e.id!==id);else ev=ev.filter(e=>e.id!==id)}
@@ -472,7 +502,7 @@ function clearAddInput(){
 }
 function quickAdd(){
   let p=parseQuick();if(p.error){notice(p.error);return}
-  if(p.kind==='deadline'){tasks.push({id:String(Date.now()),title:p.title,deadline:p.deadline,done:false});save();render();clearAddInput();notice('締切を追加したよ。同じ日付はそのまま選択中だよ');return}
+  if(p.kind==='deadline'){tasks.push({id:String(Date.now()),title:p.title,deadline:p.deadline,start:todayKey,scope:addScope,done:false});save();render();clearAddInput();if(currentGroupId)renderGroupDetail();notice('締切を追加したよ。今日から締切日まで表示するね（時間は占有しないよ）');return}
   let rawEnd=document.getElementById('endOverride').value.trim();
   let explicitEnd=rawEnd?normalizeTypedTime(rawEnd):'';
   if(rawEnd&&!explicitEnd){notice('終了時間は 09:00 のように入力してね');return}
@@ -512,13 +542,13 @@ function examples(){
   document.getElementById('repeatKinds').classList.toggle('show',type==='repeat');
   document.getElementById('weekdayPick').classList.toggle('show',type==='repeat'&&repeatKind==='weekly');
   document.getElementById('bulkCal').classList.toggle('show',type==='bulk');
-  document.getElementById('scopeBox').style.display=type==='deadline'?'none':'block';
+  document.getElementById('scopeBox').style.display='block';
   renderScopePicker();
   let msg={single:'カレンダーで日付を選んで、時間・内容を入力',repeat:'ルールを選んで、時間・内容を入力',bulk:'日付を複数選んで、時間・内容を入力',deadline:'カレンダーで締切日を選んで、内容を入力'};
   document.getElementById('example').innerHTML=`<b>かんたん入力：</b> ${msg[type]}`;
   let addLabel=document.getElementById('quickAddLabel'),hint=document.getElementById('addActionHint');
   if(addLabel)addLabel.textContent=type==='deadline'?'締切を追加する':type==='bulk'?'選んだ日すべてに追加する':type==='repeat'?'繰り返し予定を追加する':'この予定を追加する';
-  if(hint)hint.textContent=type==='deadline'?'締切リストに反映します':type==='bulk'?'選択したすべての日に反映します':'入力した内容をカレンダーに反映します';
+  if(hint)hint.textContent=type==='deadline'?'登録日から締切日まで表示。時間は占有せず、重複判定にも入りません':type==='bulk'?'選択したすべての日に反映します':'入力した内容をカレンダーに反映します';
   let singleCal=document.getElementById('singleCal');
   let miniTitle=document.getElementById('miniCalTitleText');
   if(singleCal)singleCal.style.display=(type==='single'||type==='deadline')?'block':'none';
@@ -606,7 +636,7 @@ function home(){
   let sharedToday=a.filter(e=>e.shared).length;
   document.getElementById('summary').textContent=a.length?`今日は${a.length}件${sharedToday?`（共有${sharedToday}件）`:''}の予定があるよ。`:'今日は予定なし。ゆったりできそう！';
   document.getElementById('todayN').textContent=`${a.length}件`;list(a,'todayList',true,todayKey);renderHomeSpaces();
-  let open=tasks.filter(t=>!t.done).sort((a,b)=>a.deadline.localeCompare(b.deadline));document.getElementById('taskN').textContent=`${open.length}件`;let el=document.getElementById('tasks');el.innerHTML=open.length?open.map(t=>`<div class="event"><div class="time">${fmt(t.deadline)}</div><div class="bar"></div><div><div class="title">${esc(t.title)}</div><div class="meta">この日までに</div></div><button class="tiny" data-done="${t.id}">完了</button></div>`).join(''):'<div class="empty">締切なし</div>';el.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>{let t=tasks.find(x=>x.id===b.dataset.done);t.done=true;save();render()})
+  let open=tasks.filter(t=>!t.done).sort((a,b)=>a.deadline.localeCompare(b.deadline));document.getElementById('taskN').textContent=`${open.length}件`;let el=document.getElementById('tasks');el.innerHTML=open.length?open.map(t=>renderTaskRow(t,todayKey,true)).join(''):'<div class="empty">締切なし</div>';el.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>{let t=tasks.find(x=>x.id===b.dataset.done);t.done=true;save();render();if(currentGroupId)renderGroupDetail()})
 }
 function range(kind){let d=new Date();if(kind==='tomorrow')d.setDate(d.getDate()+1);if(kind==='today'||kind==='tomorrow')return[K(d),K(d)];let day=d.getDay(),delta=(day===0?-6:1-day);let shift=kind==='nextweek'?7:kind==='lastweek'?-7:0;d.setDate(d.getDate()+delta+shift);let a=K(d);d.setDate(d.getDate()+6);return[a,K(d)]}
 function extractAskedDate(q){
@@ -624,31 +654,33 @@ function answerData(q){
     return false
   }).sort((a,b)=>eventRange(a)[0]-eventRange(b)[0]);
   if(/忙し/.test(q))return {type:'text',text:a.length>=8?`今週は${a.length}件。ちょっと忙しめだよ。`:a.length>=4?`今週は${a.length}件。ほどよく予定が入ってるよ。`:`今週は${a.length}件。比較的ゆったりしてるよ。`};
-  if(/空いて|ひま|暇/.test(q)&&r[0]===r[1])return {type:'free',date:r[0],events:a};
-  return {type:'events',from:r[0],to:r[1],events:a}
+  let at=tasks.filter(t=>{let d=new Date(r[0]+'T00:00:00');while(K(d)<=r[1]){if(taskActiveOn(t,K(d)))return true;d=addDays(d,1)}return false});
+  if(/空いて|ひま|暇/.test(q)&&r[0]===r[1])return {type:'free',date:r[0],events:a,tasks:activeTasksOn(r[0])};
+  return {type:'events',from:r[0],to:r[1],events:a,tasks:at}
 }
 function message(t,me=false){let c=document.getElementById('messages'),d=document.createElement('div');d.className='msg '+(me?'me':'ai');d.textContent=t;c.appendChild(d);c.scrollTop=c.scrollHeight}
 function renderAnswer(data){
   let c=document.getElementById('messages');
   if(data.type==='text'){message(data.text);return}
   if(data.type==='free'){
-    if(!data.events.length){let d=document.createElement('div');d.className='freeCard';d.innerHTML=`<b>✓ ${fmt(data.date)}は空いてるよ</b><div style="margin-top:5px">今の登録内容では予定なし！</div>`;c.appendChild(d)}
+    if(!data.events.length){let d=document.createElement('div');d.className='freeCard';let tt=(data.tasks||[]);d.innerHTML=`<b>✓ ${fmt(data.date)}は空いてるよ</b><div style="margin-top:5px">時間を使う予定はなし！${tt.length?`<br>📋 進行中の締切 ${tt.length}件（空き時間は塞がないよ）`:''}</div>`;c.appendChild(d)}
     else{
       let used=data.events.map(e=>`${e.date===data.date?`${e.start}〜${endLabel(e)}`:`前日から〜${e.end}`} ${esc(e.title)}`).join('<br>');let d=document.createElement('div');d.className='freeCard';d.innerHTML=`<b>${fmt(data.date)}の予定</b><div style="margin-top:6px">${used}</div>`;c.appendChild(d)
     }c.scrollTop=c.scrollHeight;return
   }
   let d=document.createElement('div');d.className='answerCard';
-  if(!data.events.length){d.innerHTML=`<div class="answerHead">${fmt(data.from)}${data.from!==data.to?'〜'+fmt(data.to):''}</div><div class="empty">予定なしだよ</div>`}
+  let taskData=data.tasks||[];
+  if(!data.events.length&&!taskData.length){d.innerHTML=`<div class="answerHead">${fmt(data.from)}${data.from!==data.to?'〜'+fmt(data.to):''}</div><div class="empty">予定なしだよ</div>`}
   else{
     let groups={};
     let gd=new Date(data.from+'T00:00:00');
     while(K(gd)<=data.to){
-      let k=K(gd),items=data.events.filter(e=>eventTouchesDay(e,k));
-      if(items.length)groups[k]=items;
+      let k=K(gd),items=data.events.filter(e=>eventTouchesDay(e,k)),tt=taskData.filter(t=>taskActiveOn(t,k));
+      if(items.length||tt.length)groups[k]={items,tt};
       gd=addDays(gd,1)
     }
-    let head=data.from===data.to?`${fmt(data.from)}の予定`: `${fmt(data.from)}〜${fmt(data.to)}の予定・${data.events.length}件`;
-    d.innerHTML=`<div class="answerHead">📅 ${head}</div>`+Object.entries(groups).map(([k,items])=>{let dt=new Date(k+'T00:00:00'),wd=['日','月','火','水','木','金','土'][dt.getDay()];return `<div class="dayGroup"><div class="dayLabel">${fmt(k)}<small>(${wd})</small></div><div class="dayItems">${items.map(e=>`<div class="dayEvent"><span>${e.date===k?`${e.start}〜${endLabel(e)}`:`前日から〜${e.end}`}</span><b>${esc(e.title)} ${e.shared?`<span class="sourceTag">👥 ${esc(sourceLabel(e))}</span>`:''}</b></div>`).join('')}</div></div>`}).join('')
+    let head=data.from===data.to?`${fmt(data.from)}の予定`: `${fmt(data.from)}〜${fmt(data.to)}の予定`;
+    d.innerHTML=`<div class="answerHead">📅 ${head}</div>`+Object.entries(groups).map(([k,v])=>{let dt=new Date(k+'T00:00:00'),wd=['日','月','火','水','木','金','土'][dt.getDay()];return `<div class="dayGroup"><div class="dayLabel">${fmt(k)}<small>(${wd})</small></div><div class="dayItems">${v.items.map(e=>`<div class="dayEvent"><span>${e.date===k?`${e.start}〜${endLabel(e)}`:`前日から〜${e.end}`}</span><b>${esc(e.title)} ${e.shared?`<span class="sourceTag">👥 ${esc(sourceLabel(e))}</span>`:''}</b></div>`).join('')}${v.tt.map(t=>`<div class="dayEvent"><span>📋 ${taskStatus(t,k)}</span><b>${esc(t.title)} <span class="sourceTag">${esc(taskSourceLabel(t))}</span></b></div>`).join('')}</div></div>`}).join('')
   }
   c.appendChild(d);c.scrollTop=c.scrollHeight
 }
@@ -662,14 +694,14 @@ function renderScopePicker(){
 }
 function updateScopeHint(){
   let hint=document.getElementById('scopeHint');if(!hint)return;
-  if(addScope==='private')hint.textContent='プライベートは自分だけ。ここで追加した予定は共有されません。';
-  else{let g=groupById(addScope);hint.textContent=`「${g?.name||'共有'}」に追加 → グループで共有 ＋ あなたのプライベートにも自動反映。重複警告はあなたにだけ表示。`}
+  if(addScope==='private')hint.textContent=type==='deadline'?'プライベートの締切。登録日から締切日まで見えるけど、時間は占有しません。':'プライベートは自分だけ。ここで追加した予定は共有されません。';
+  else{let g=groupById(addScope);hint.textContent=type==='deadline'?`「${g?.name||'共有'}」の締切として共有。登録日〜締切日まで表示し、時間は占有しません。`:`「${g?.name||'共有'}」に追加 → グループで共有 ＋ あなたのプライベートにも自動反映。重複警告はあなたにだけ表示。`}
 }
 function renderGroups(){
   let list=document.getElementById('groupList');if(!list)return;
   document.getElementById('groupCount').textContent=`${groups.length}グループ`;
   list.innerHTML=`<button class="groupCard" type="button" data-private-space="1"><div class="groupIcon">🏠</div><div><div class="groupName">プライベート</div><div class="groupMeta">自分だけの予定 ＋ 参加中グループの予定を集約</div></div><div class="chev">›</div></button>`+
-    groups.map(g=>{let n=sharedEv.filter(e=>e.groupId===g.id).length;return `<button class="groupCard" style="--group-color:${g.color}" type="button" data-group="${g.id}"><div class="groupIcon" style="background:${g.color}18">${esc(g.icon)}</div><div><div class="groupName">${esc(g.name)}</div><div class="groupMeta">${g.members.length}人・共有予定 ${n}件</div></div><div class="chev">›</div></button>`}).join('');
+    groups.map(g=>{let n=sharedEv.filter(e=>e.groupId===g.id).length,tn=tasks.filter(t=>!t.done&&taskScope(t)===g.id).length;return `<button class="groupCard" style="--group-color:${g.color}" type="button" data-group="${g.id}"><div class="groupIcon" style="background:${g.color}18">${esc(g.icon)}</div><div><div class="groupName">${esc(g.name)}</div><div class="groupMeta">${g.members.length}人・共有予定 ${n}件${tn?`・締切 ${tn}件`:''}</div></div><div class="chev">›</div></button>`}).join('');
   list.querySelector('[data-private-space]').onclick=()=>show('home');
   list.querySelectorAll('[data-group]').forEach(b=>b.onclick=()=>openGroup(b.dataset.group));
 }
@@ -681,8 +713,8 @@ function renderGroupCalendar(){
   let f=new Date(groupCy,groupCm,1).getDay(),last=new Date(groupCy,groupCm+1,0).getDate();
   for(let i=0;i<f;i++)grid.appendChild(document.createElement('div'));
   for(let d=1;d<=last;d++){
-    let k=`${groupCy}-${pad(groupCm+1)}-${pad(d)}`,has=sharedEv.some(e=>e.groupId===g.id&&eventTouchesDay(e,k));
-    let b=document.createElement('button');b.type='button';b.className='groupDay'+(has?' has':'');b.innerHTML=`${d}${has?`<div class="dot" style="background:${g.color}"></div>`:''}`;
+    let k=`${groupCy}-${pad(groupCm+1)}-${pad(d)}`,has=sharedEv.some(e=>e.groupId===g.id&&eventTouchesDay(e,k)),hasTask=activeTasksOn(k,g.id).length>0;
+    let b=document.createElement('button');b.type='button';b.className='groupDay'+(has||hasTask?' has':'');let marks=`${has?`<span class="dot" style="background:${g.color}"></span>`:''}${hasTask?`<span class="taskDiamond" style="background:${g.color}"></span>`:''}`;b.innerHTML=`${d}${marks?`<div class="marks">${marks}</div>`:''}`;
     b.onclick=()=>{type='single';addScope=g.id;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.type==='single'));examples();show('add');document.getElementById('dateInput').value=`${groupCm+1}/${d}`;singleY=groupCy;singleM=groupCm;renderSingleCal();renderScopePicker();document.getElementById('startInput').focus()};grid.appendChild(b)
   }
 }
@@ -695,6 +727,10 @@ function renderGroupDetail(){
   document.getElementById('groupEventCount').textContent=`${items.length}件`;
   document.getElementById('groupEvents').innerHTML=items.length?items.map(e=>`<div class="groupEvent" style="--group-color:${g.color}"><div class="groupEventTop"><div><div class="groupEventTime">${fmt(e.date)} ${e.start}〜${endLabel(e)}</div><div class="groupEventTitle">${esc(e.title)}</div><div class="groupEventMeta">${esc(g.name)}の共有予定・プライベートにも表示中</div></div><button class="tiny" type="button" data-del-shared="${e.id}">削除</button></div></div>`).join(''):'<div class="groupEmpty">まだ共有予定はないよ。<br>カレンダーの日付か下のボタンから追加できるよ。</div>';
   document.querySelectorAll('[data-del-shared]').forEach(b=>b.onclick=()=>{removeEvent(b.dataset.delShared,true);save();render();renderGroupDetail();notice('共有予定を削除したよ')});
+  let gt=tasks.filter(t=>!t.done&&taskScope(t)===g.id).sort((a,b)=>a.deadline.localeCompare(b.deadline));
+  document.getElementById('groupTaskCount').textContent=`${gt.length}件`;
+  document.getElementById('groupTasks').innerHTML=gt.length?gt.map(t=>`<div class="groupTaskCard" style="--task-color:${g.color}"><div class="groupTaskTop"><div><div class="groupTaskTitle">📋 ${esc(t.title)}</div><div class="groupTaskMeta">${fmt(taskStart(t))} → ${fmt(t.deadline)} ・ ${taskStatus(t,todayKey)}<br>毎日表示・時間は占有しない</div></div><button class="tiny" type="button" data-done-group="${t.id}">完了</button></div></div>`).join(''):'<div class="groupEmpty" style="padding:12px 8px">進行中の締切はないよ。</div>';
+  document.querySelectorAll('[data-done-group]').forEach(b=>b.onclick=()=>{let t=tasks.find(x=>x.id===b.dataset.doneGroup);if(t)t.done=true;save();render();renderGroupDetail();notice('締切を完了にしたよ')});
   document.getElementById('groupColorPicker').innerHTML=groupPalette.map(c=>`<button class="colorChoice ${c===g.color?'on':''}" type="button" data-color="${c}" style="background:${c}" aria-label="グループカラー"></button>`).join('');
   document.querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>{g.color=b.dataset.color;save();renderGroupDetail();renderGroups();render()});
   document.getElementById('inviteLink').textContent=inviteUrl(g);renderGroupCalendar();
@@ -745,17 +781,17 @@ document.getElementById('cancelPending').onclick=()=>{pendingRisk=[];renderConfl
 document.getElementById('quickAdd').onclick=quickAdd;document.getElementById('titleInput').addEventListener('keydown',e=>{if(e.key==='Enter')quickAdd()});
 document.getElementById('startInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('titleInput').focus()});
 function openDay(k){
-  selectedDay=k;calendar();let a=allEvents().filter(e=>eventTouchesDay(e,k)),t=tasks.filter(x=>!x.done&&x.deadline===k);
+  selectedDay=k;calendar();let a=allEvents().filter(e=>eventTouchesDay(e,k)),t=activeTasksOn(k);
   document.getElementById('dayDetail').classList.add('show');document.getElementById('dayTitle').textContent=fmt(k);
   document.getElementById('daySub').textContent=`予定 ${a.length}件${t.length?`・締切 ${t.length}件`:''}`;
   list(a,'dayEvents',true,k);
-  if(t.length)document.getElementById('dayEvents').insertAdjacentHTML('beforeend',t.map(x=>`<div class="event"><div class="time">締切</div><div class="bar"></div><div><div class="title">${esc(x.title)}</div><div class="meta">この日までに</div></div><span></span></div>`).join(''));
+  if(t.length)document.getElementById('dayEvents').insertAdjacentHTML('beforeend',t.map(x=>renderTaskRow(x,k,false)).join(''));
   document.getElementById('dayDetail').scrollIntoView({behavior:'smooth',block:'nearest'})
 }
 function calendar(){
   document.getElementById('month').textContent=`${cy}年 ${cm+1}月`;let g=document.getElementById('grid');g.innerHTML='';let f=new Date(cy,cm,1).getDay(),last=new Date(cy,cm+1,0).getDate();
   for(let i=0;i<f;i++)g.appendChild(document.createElement('div'));
-  for(let d=1;d<=last;d++){let k=`${cy}-${pad(cm+1)}-${pad(d)}`,b=document.createElement('button');b.className='day'+(k===todayKey?' today':'')+(k===selectedDay?' selected':'');let items=allEvents().filter(e=>eventTouchesDay(e,k)),sources=[];if(items.some(e=>!e.shared)||tasks.some(t=>!t.done&&t.deadline===k))sources.push('#7468f6');groups.forEach(gr=>{if(items.some(e=>e.shared&&e.groupId===gr.id))sources.push(gr.color)});b.innerHTML=`${d}${sources.length?`<div class="dots">${sources.map(c=>`<span class="dot" style="background:${c}"></span>`).join('')}</div>`:''}`;b.onclick=()=>openDay(k);g.appendChild(b)}
+  for(let d=1;d<=last;d++){let k=`${cy}-${pad(cm+1)}-${pad(d)}`,b=document.createElement('button');b.className='day'+(k===todayKey?' today':'')+(k===selectedDay?' selected':'');let items=allEvents().filter(e=>eventTouchesDay(e,k)),sources=[];if(items.some(e=>!e.shared))sources.push('#7468f6');groups.forEach(gr=>{if(items.some(e=>e.shared&&e.groupId===gr.id))sources.push(gr.color)});let taskSources=[...new Set(activeTasksOn(k).map(taskColor))];let marks=sources.map(c=>`<span class="dot" style="background:${c}"></span>`).join('')+taskSources.map(c=>`<span class="taskDiamond" style="background:${c}"></span>`).join('');b.innerHTML=`${d}${marks?`<div class="dots">${marks}</div>`:''}`;b.onclick=()=>openDay(k);g.appendChild(b)}
 }
 document.getElementById('addForDay').onclick=()=>{if(!selectedDay)return;type='single';document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.type==='single'));examples();show('add');document.getElementById('dateInput').value=`${+selectedDay.slice(5,7)}/${+selectedDay.slice(8,10)}`;singleY=+selectedDay.slice(0,4);singleM=+selectedDay.slice(5,7)-1;renderSingleCal();document.getElementById('startInput').focus()};
 document.getElementById('prev').onclick=()=>{if(--cm<0){cm=11;cy--}calendar();document.getElementById('dayDetail').classList.remove('show')};
@@ -763,7 +799,7 @@ document.getElementById('next').onclick=()=>{if(++cm>11){cm=0;cy++}calendar();do
 function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id||(id==='groupDetail'&&x.dataset.tab==='groups')));if(id==='groups')renderGroups();if(id==='groupDetail')renderGroupDetail()}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>show(b.dataset.tab));
 function render(){home();calendar()}
-examples();renderSingleCal();renderGroups();renderScopePicker();render();
+save();examples();renderSingleCal();renderGroups();renderScopePicker();render();
 (()=>{let q=new URLSearchParams(location.search),code=q.get('invite');if(!code)return;let g=groups.find(x=>x.invite===code);if(g){setTimeout(()=>{notice(`「${g.name}」の招待リンクを開いたよ。テスター版では参加同期はバックエンド接続後に有効になるよ`);show('groups')},80)}})();
 </script>
 </body>
