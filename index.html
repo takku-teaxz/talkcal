@@ -83,12 +83,24 @@
 </style><style>
 .directDate{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 .directDate summary{cursor:pointer;font-size:13px;font-weight:800;color:var(--muted)}
-</style></head>
+</style>
+<style>
+/* v22: shared groups / friend prototype */
+:root{--pink:#f0719b;--blue:#65a4ee;--green:#45b987;--warn:#d85d67}
+.nav{grid-template-columns:repeat(5,minmax(0,1fr))}.nav button{font-size:10px;padding:7px 1px}.nav button b{font-size:18px}
+.spaceStrip{display:flex;gap:8px;overflow:auto;padding:2px 0 4px}.spacePill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;white-space:nowrap;font-size:12px;font-weight:900;color:#666}.spacePill.on{background:var(--soft);border-color:#cfc9ff;color:var(--p)}
+.scopeBox{margin:12px 0 2px;padding:13px;border:1px solid #ddd8f6;border-radius:18px;background:#faf9ff}.scopeTitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;font-size:13px;font-weight:900}.scopeTitle small{color:var(--muted);font-weight:700}.scopePicker{display:flex;gap:7px;overflow:auto}.scopeChip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 12px;white-space:nowrap;font-weight:900;color:#686878}.scopeChip.on{background:var(--p);color:#fff;border-color:var(--p);box-shadow:0 6px 14px rgba(105,84,220,.18)}
+.sourceTag{display:inline-flex;align-items:center;gap:4px;margin-left:5px;padding:3px 7px;border-radius:999px;background:#f1efff;color:#6558ca;font-size:10px;font-weight:900;vertical-align:1px}.sourceTag.private{background:#f1f1f5;color:#777}.event.shared .bar{background:linear-gradient(180deg,#8b7cff,#be91ff)}.eventConflict{margin-top:4px;color:var(--warn);font-size:11px;font-weight:900}
+.groupIntro{background:linear-gradient(135deg,#f3efff,#fff0f6);border:1px solid #e8dff8}.groupList{display:flex;flex-direction:column;gap:9px}.groupCard{width:100%;border:1px solid var(--line);background:#fff;border-radius:18px;padding:13px;display:grid;grid-template-columns:48px 1fr auto;gap:11px;align-items:center;text-align:left;cursor:pointer}.groupIcon{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,#f8e7ef,#efe9ff);font-size:23px}.groupName{font-size:16px;font-weight:900}.groupMeta{font-size:11px;color:var(--muted);margin-top:3px}.chev{font-size:22px;color:#aaa}.groupCreate{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}.groupCreate input{min-width:0}.secondaryBtn{border:1px solid #dcd8ff;background:#fff;color:var(--p);border-radius:13px;padding:10px 13px;font-weight:900}.primaryMini{border:0;background:var(--p);color:#fff;border-radius:13px;padding:10px 14px;font-weight:900}.demoBadge{display:inline-block;padding:5px 8px;border-radius:999px;background:#f1efff;color:#675ad0;font-size:10px;font-weight:900}.privacyNote{padding:12px;border-radius:15px;background:#eef8f4;border:1px solid #d8eee5;color:#2f6f59;font-size:12px;line-height:1.55}.privacyNote b{display:block;margin-bottom:3px}.groupHero{background:linear-gradient(135deg,#e7d9fb,#f5e1ea);border:0;padding:20px}.groupHeroTop{display:flex;justify-content:space-between;align-items:center}.groupHeroIcon{width:64px;height:64px;border-radius:22px;background:rgba(255,255,255,.72);display:grid;place-items:center;font-size:30px}.groupHero h2{font-size:26px;margin:12px 0 3px}.groupHero p{margin:0;color:#696170;font-size:13px}.backBtn{border:0;background:#fff;border-radius:12px;width:40px;height:40px;font-size:20px}.memberRow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.memberBubble{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fafafd;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:800}.memberAvatar{width:25px;height:25px;border-radius:50%;background:#eee9ff;display:grid;place-items:center}.groupEvent{padding:12px;border:1px solid var(--line);border-radius:16px;margin-top:8px;background:#fff}.groupEventTop{display:flex;justify-content:space-between;gap:10px}.groupEventTime{font-size:13px;font-weight:900;color:var(--p)}.groupEventTitle{font-size:15px;font-weight:900;margin-top:3px}.groupEventMeta{font-size:11px;color:var(--muted);margin-top:4px}.shareRule{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.shareRule b{font-size:13px}.shareRule small{display:block;color:var(--muted);margin-top:2px}.switchOn{width:44px;height:26px;border-radius:999px;background:var(--p);position:relative}.switchOn:after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;right:3px;top:3px}.localOnly{font-size:11px;color:var(--muted);line-height:1.55;margin-top:8px}.groupEmpty{text-align:center;color:var(--muted);padding:22px 8px}.copyCode{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1px;font-weight:900}.scopeHint{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.5}
+@media(max-width:380px){.nav button{font-size:9px}.nav button b{font-size:17px}.groupCard{grid-template-columns:42px 1fr auto}.groupIcon{width:42px;height:42px;border-radius:14px}}
+</style>
+</head>
 <body>
 <main class="app">
 <section id="home" class="screen active">
   <div class="top"><div class="logo">Talk<i>Cal</i></div><div class="avatar">👧🏻</div></div>
   <div class="card hero"><small id="date"></small><h1>今日どうする？</h1><p id="summary">予定を確認してるよ。</p></div>
+  <div class="card"><div class="head"><b>表示中：プライベート</b><span>共有予定もここに集約</span></div><div class="spaceStrip" id="homeSpaces"></div></div>
   <div class="card"><div class="head"><b>今日の予定</b><span id="todayN"></span></div><div id="todayList"></div></div>
   <div class="card"><div class="head"><b>締切</b><span id="taskN"></span></div><div id="tasks"></div></div>
 </section>
@@ -102,6 +114,11 @@
       <button class="tab" data-type="repeat">繰り返し</button>
       <button class="tab" data-type="bulk">一括</button>
       <button class="tab" data-type="deadline">締切</button>
+    </div>
+    <div id="scopeBox" class="scopeBox">
+      <div class="scopeTitle"><span>追加先</span><small>共有先を選べるよ</small></div>
+      <div id="scopePicker" class="scopePicker"></div>
+      <div class="scopeHint" id="scopeHint">プライベートは自分だけ。グループを選ぶと、その予定だけ共有されます。</div>
     </div>
     <div id="repeatKinds" class="repeatKinds">
       <button class="repeatKind active" data-repeat="daily">毎日</button>
@@ -178,6 +195,48 @@
   </div>
 </section>
 
+
+<section id="groups" class="screen">
+  <div class="top"><div class="logo">グループ</div><div class="avatar">👥</div></div>
+  <div class="card groupIntro">
+    <div class="head"><b>共有スペース</b><span class="demoBadge">ローカル試作</span></div>
+    <div style="font-weight:900;font-size:18px;line-height:1.45">大切な人との予定だけ、ここで共有。</div>
+    <div class="subtle" style="margin-top:6px;line-height:1.55">共有予定はあなたの「プライベート」にも自動で表示。個人予定や重複警告は相手には見えません。</div>
+  </div>
+  <div class="card">
+    <div class="head"><b>あなたのスペース</b><span id="groupCount"></span></div>
+    <div id="groupList" class="groupList"></div>
+  </div>
+  <div class="card">
+    <div class="head"><b>グループを作る</b><span>LINEグループ感覚</span></div>
+    <div class="groupCreate"><input class="field" id="newGroupName" placeholder="例：家族 / 旅行メンバー"><button class="primaryMini" id="createGroup" type="button">作成</button></div>
+    <div class="localOnly">このv22はUI・ローカル動作確認版。別端末への本当の同期は、テスター用バックエンド接続時に有効化する想定です。</div>
+  </div>
+</section>
+
+<section id="groupDetail" class="screen">
+  <div class="top"><button class="backBtn" id="groupBack" type="button">‹</button><div class="logo" style="font-size:20px">共有カレンダー</div><div class="avatar">👥</div></div>
+  <div class="card groupHero">
+    <div class="groupHeroTop"><div class="groupHeroIcon" id="groupHeroIcon">💗</div><span class="demoBadge">共有</span></div>
+    <h2 id="groupHeroName">彼女</h2><p id="groupHeroMeta">2人の共有カレンダー</p>
+  </div>
+  <div class="card">
+    <div class="head"><b>メンバー</b><span id="memberCount"></span></div>
+    <div class="memberRow" id="memberRow"></div>
+    <div class="shareRule" style="margin-top:13px"><div><b>共有予定をプライベートに表示</b><small>自分の全予定の中に自動で合流</small></div><div class="switchOn" aria-hidden="true"></div></div>
+  </div>
+  <div class="card">
+    <div class="head"><b>このグループの予定</b><span id="groupEventCount"></span></div>
+    <div id="groupEvents"></div>
+    <button class="primaryAddBtn" id="addToCurrentGroup" type="button" style="margin-top:14px;min-height:52px"><span class="primaryAddIcon">＋</span><span>このグループに予定を追加</span></button>
+  </div>
+  <div class="card">
+    <div class="head"><b>招待コード</b><span>テスター用UI</span></div>
+    <div style="display:flex;gap:8px;align-items:center"><div class="field copyCode" id="inviteCode" style="flex:1"></div><button class="secondaryBtn" id="copyInvite" type="button">コピー</button></div>
+  </div>
+  <div class="privacyNote"><b>🔒 重複チェックは本人だけ</b>このグループ予定があなたの個人予定と重なっていても、警告内容・個人予定名・重なっている事実そのものを相手側には共有しない設計です。</div>
+</section>
+
 <section id="chat" class="screen">
   <div class="top"><div class="logo">あいちゃん</div><div class="avatar">👧🏻</div></div>
   <div class="card">
@@ -211,6 +270,7 @@
   <button type="button" class="active" data-tab="home"><b>⌂</b>ホーム</button>
   <button type="button" data-tab="add"><b>＋</b>追加</button>
   <button type="button" data-tab="chat"><b>💬</b>聞く</button>
+  <button type="button" data-tab="groups"><b>👥</b>グループ</button>
   <button type="button" data-tab="cal"><b>▦</b>カレンダー</button>
 </nav>
 
@@ -222,11 +282,28 @@ const mins=t=>{let[a,b]=t.split(':').map(Number);return a*60+b};
 const W={'日':0,'月':1,'火':2,'水':3,'木':4,'金':5,'土':6};
 let ev=JSON.parse(localStorage.getItem('tc_hybrid_v2_ev')||'[]');
 let tasks=JSON.parse(localStorage.getItem('tc_hybrid_v2_tasks')||'[]');
+const defaultGroups=()=>[
+  {id:'g_partner',name:'彼女',icon:'💗',members:['あなた','みーちゃん'],invite:'LOVE26'},
+  {id:'g_friends',name:'友達',icon:'👥',members:['あなた','友達A','友達B'],invite:'FRIEND'}
+];
+let groups=JSON.parse(localStorage.getItem('tc_hybrid_v22_groups')||'null')||defaultGroups();
+let sharedEv=JSON.parse(localStorage.getItem('tc_hybrid_v22_shared')||'[]');
 let type='single', repeatKind='daily', cy=now.getFullYear(), cm=now.getMonth(), selectedDay=null;
 let singleY=now.getFullYear(), singleM=now.getMonth();
 let bulkY=now.getFullYear(), bulkM=now.getMonth(), bulkDates=new Set(), weeklyDays=new Set();
-let pendingRisk=[];
-const save=()=>{localStorage.setItem('tc_hybrid_v2_ev',JSON.stringify(ev));localStorage.setItem('tc_hybrid_v2_tasks',JSON.stringify(tasks))};
+let pendingRisk=[],addScope='private',currentGroupId=null;
+const save=()=>{
+  localStorage.setItem('tc_hybrid_v2_ev',JSON.stringify(ev));
+  localStorage.setItem('tc_hybrid_v2_tasks',JSON.stringify(tasks));
+  localStorage.setItem('tc_hybrid_v22_groups',JSON.stringify(groups));
+  localStorage.setItem('tc_hybrid_v22_shared',JSON.stringify(sharedEv));
+};
+const allEvents=()=>[...ev.map(x=>({...x,shared:false})),...sharedEv.map(x=>({...x,shared:true}))];
+const groupById=id=>groups.find(g=>g.id===id);
+const sourceLabel=e=>e.shared?(groupById(e.groupId)?.name||'共有'):'プライベート';
+function privateConflictForShared(e){return !!e.shared&&ev.some(p=>overlap(e,p))}
+function storeEvent(x){if(x.shared||x.groupId)sharedEv.push({...x,shared:true});else ev.push({...x,shared:false})}
+function removeEvent(id,shared){if(shared)sharedEv=sharedEv.filter(e=>e.id!==id);else ev=ev.filter(e=>e.id!==id)}
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function overlap(a,b){
   let [as,ae]=eventRange(a),[bs,be]=eventRange(b);
@@ -338,7 +415,7 @@ function parseQuick(){
 }
 function riskFor(x){
   let [xs,xe]=eventRange(x);
-  return ev.map(y=>{
+  return allEvents().map(y=>{
     let [ys,ye]=eventRange(y);
 
     // Compare the whole occupied time ranges, not only the two start times.
@@ -360,12 +437,22 @@ function renderConflict(){
   box.classList.add('show');
   let hasOverlap=pendingRisk.some(p=>p.hits.some(h=>h.kind==='overlap'));
   document.getElementById('conflictTitle').textContent=hasOverlap?'🔴 予定が重なっています':'🟡 近い予定があります';
-  document.getElementById('conflictList').innerHTML=pendingRisk.map(p=>`<div class="conflictItem"><b>${fmt(p.x.date)} ${p.x.start}　${esc(p.x.title)}</b><br>${p.hits.map(h=>`${h.kind==='overlap'?'時間帯が重複':'前後1時間以内'}：${h.event.start}〜${endLabel(h.event)} ${esc(h.event.title)}`).join('<br>')}</div>`).join('');
+  document.getElementById('conflictList').innerHTML=pendingRisk.map(p=>`<div class="conflictItem"><b>${fmt(p.x.date)} ${p.x.start}　${esc(p.x.title)}</b><br>${p.hits.map(h=>`${h.kind==='overlap'?'時間帯が重複':'前後1時間以内'}：${h.event.start}〜${endLabel(h.event)} ${esc(h.event.title)} <span class="sourceTag ${h.event.shared?'':'private'}">${esc(sourceLabel(h.event))}</span>`).join('<br>')}<div class="eventConflict">🔒 この重複情報はあなたにだけ表示</div></div>`).join('');
 }
-function clearAddInput(){document.getElementById('dateInput').value='';document.getElementById('startInput').value='';document.getElementById('titleInput').value='';document.getElementById('endOverride').value='';document.getElementById('endDayOffset').value='0';document.getElementById('memo').value='';if(type==='bulk'){bulkDates.clear();renderBulk()}}
+function clearAddInput(){
+  // v22 微調整①: 日付が紫で選択されたままなら、内部の日付も保持する。
+  // 同じ日に続けて予定を入れる時、日付を毎回選び直さなくていい。
+  document.getElementById('startInput').value='';
+  document.getElementById('titleInput').value='';
+  document.getElementById('endOverride').value='';
+  document.getElementById('endDayOffset').value='0';
+  document.getElementById('memo').value='';
+  if(type==='bulk'){bulkDates.clear();renderBulk()}
+  if(type==='single'||type==='deadline')renderSingleCal();
+}
 function quickAdd(){
   let p=parseQuick();if(p.error){notice(p.error);return}
-  if(p.kind==='deadline'){tasks.push({id:String(Date.now()),title:p.title,deadline:p.deadline,done:false});save();render();clearAddInput();notice('締切を追加したよ');return}
+  if(p.kind==='deadline'){tasks.push({id:String(Date.now()),title:p.title,deadline:p.deadline,done:false});save();render();clearAddInput();notice('締切を追加したよ。同じ日付はそのまま選択中だよ');return}
   let rawEnd=document.getElementById('endOverride').value.trim();
   let explicitEnd=rawEnd?normalizeTypedTime(rawEnd):'';
   if(rawEnd&&!explicitEnd){notice('終了時間は 09:00 のように入力してね');return}
@@ -375,10 +462,10 @@ function quickAdd(){
   if(explicitEnd&&endDayOffset===0&&mins(end)<=mins(p.start)){notice('当日終了なら、終了時間は開始より後にしてね。夜勤や泊まりは終了日を「翌日」にしてね');return}
   if(!explicitEnd&&endDayOffset>0){notice('翌日以降を選ぶときは終了時間も入れてね');return}
   let memo=document.getElementById('memo').value.trim(),safe=[];pendingRisk=[];
-  p.dates.forEach(date=>{let x={id:String(Date.now()+Math.random()),date,start:p.start,end,title:p.title,memo,recurrence:p.rule,endExplicit:!!explicitEnd,endDayOffset:explicitEnd?endDayOffset:0};let hits=riskFor(x);hits.length?pendingRisk.push({x,hits}):safe.push(x)});
-  safe.forEach(x=>ev.push(x));save();render();
+  p.dates.forEach(date=>{let shared=addScope!=='private';let x={id:String(Date.now()+Math.random()),date,start:p.start,end,title:p.title,memo,recurrence:p.rule,endExplicit:!!explicitEnd,endDayOffset:explicitEnd?endDayOffset:0,shared,groupId:shared?addScope:null};let hits=riskFor(x);hits.length?pendingRisk.push({x,hits}):safe.push(x)});
+  safe.forEach(storeEvent);save();render();
   if(pendingRisk.length){renderConflict();notice(safe.length?`${safe.length}件は追加したよ。近い予定だけ確認してね`:'追加前に確認してね')}
-  else{clearAddInput();renderConflict();notice(`${safe.length}件追加したよ`)}
+  else{clearAddInput();renderConflict();notice(`${safe.length}件追加したよ${addScope!=='private'?'。共有予定としてプライベートにも反映済み':''}`)}
 }
 function findSuggestions(p){
   let dur=Math.max(30,(eventRange(p.x)[1]-eventRange(p.x)[0])/60000),base=mins(p.x.start),out=[];if(dur>720)return out;
@@ -392,7 +479,7 @@ function findSuggestions(p){
 function showMove(){
   if(!pendingRisk.length)return;let p=pendingRisk[0],sug=findSuggestions(p),a=document.getElementById('moveArea');
   a.innerHTML=`<div class="conflictItem"><b>${fmt(p.x.date)} の空いていそうな時間</b><div class="suggestions">${sug.length?sug.map((x,i)=>`<button data-sug="${i}">${x.start}〜${x.end}</button>`).join(''):'候補が見つからなかったよ'}</div></div>`;
-  a.querySelectorAll('[data-sug]').forEach(b=>b.onclick=()=>{let cand=sug[+b.dataset.sug];ev.push(cand);pendingRisk.shift();save();render();renderConflict();if(!pendingRisk.length){clearAddInput();notice('時間を動かして追加したよ')}else{showMove()}})
+  a.querySelectorAll('[data-sug]').forEach(b=>b.onclick=()=>{let cand=sug[+b.dataset.sug];storeEvent(cand);pendingRisk.shift();save();render();renderConflict();if(!pendingRisk.length){clearAddInput();notice('時間を動かして追加したよ')}else{showMove()}})
 }
 
 function examples(){
@@ -405,6 +492,8 @@ function examples(){
   document.getElementById('repeatKinds').classList.toggle('show',type==='repeat');
   document.getElementById('weekdayPick').classList.toggle('show',type==='repeat'&&repeatKind==='weekly');
   document.getElementById('bulkCal').classList.toggle('show',type==='bulk');
+  document.getElementById('scopeBox').style.display=type==='deadline'?'none':'block';
+  renderScopePicker();
   let msg={single:'カレンダーで日付を選んで、時間・内容を入力',repeat:'ルールを選んで、時間・内容を入力',bulk:'日付を複数選んで、時間・内容を入力',deadline:'カレンダーで締切日を選んで、内容を入力'};
   document.getElementById('example').innerHTML=`<b>かんたん入力：</b> ${msg[type]}`;
   let addLabel=document.getElementById('quickAddLabel'),hint=document.getElementById('addActionHint');
@@ -477,12 +566,26 @@ function list(a,id,del=false,viewDate=null){
     let carry=viewDate&&e.date!==viewDate;
     let mainTime=carry?`〜${e.end}`:e.start;
     let meta=carry?`前日${e.start}から継続・${e.end}まで`:`${fmt(e.date)} ${e.start}〜${endLabel(e)}`;
-    return `<div class="event"><div class="time">${mainTime}</div><div class="bar"></div><div><div class="title">${esc(e.title)}</div><div class="meta">${meta}</div></div>${del?`<button class="tiny" data-del="${e.id}">削除</button>`:''}</div>`
+    let tag=`<span class="sourceTag ${e.shared?'':'private'}">${e.shared?'👥 ':''}${esc(sourceLabel(e))}</span>`;
+    let action='';
+    if(del&&!e.shared)action=`<button class="tiny" data-del-private="${e.id}">削除</button>`;
+    else if(e.shared)action=`<span class="tiny" style="font-size:10px">共有</span>`;
+    let localWarn=privateConflictForShared(e)?`<div class="eventConflict">⚠️ 自分の予定と重なっています <span style="font-weight:700">（自分だけに表示）</span></div>`:'';
+    return `<div class="event ${e.shared?'shared':''}"><div class="time">${mainTime}</div><div class="bar"></div><div><div class="title">${esc(e.title)} ${tag}</div><div class="meta">${meta}</div>${localWarn}</div>${action}</div>`
   }).join(''):'<div class="empty">予定なし</div>';
-  if(del)x.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ev=ev.filter(e=>e.id!==b.dataset.del);save();render();if(selectedDay)openDay(selectedDay)})
+  if(del)x.querySelectorAll('[data-del-private]').forEach(b=>b.onclick=()=>{removeEvent(b.dataset.delPrivate,false);save();render();if(selectedDay)openDay(selectedDay)})
+}
+function renderHomeSpaces(){
+  let el=document.getElementById('homeSpaces');if(!el)return;
+  el.innerHTML=`<button class="spacePill on" type="button">🏠 プライベート</button>`+groups.map(g=>`<button class="spacePill" type="button" data-open-group="${g.id}">${esc(g.icon)} ${esc(g.name)}</button>`).join('');
+  el.querySelectorAll('[data-open-group]').forEach(b=>b.onclick=()=>openGroup(b.dataset.openGroup));
 }
 function home(){
-  let a=ev.filter(e=>eventTouchesDay(e,todayKey));document.getElementById('date').textContent=`${now.getMonth()+1}月${now.getDate()}日`;document.getElementById('summary').textContent=a.length?`今日は${a.length}件の予定があるよ。`:'今日は予定なし。ゆったりできそう！';document.getElementById('todayN').textContent=`${a.length}件`;list(a,'todayList',true,todayKey);
+  let all=allEvents(),a=all.filter(e=>eventTouchesDay(e,todayKey));
+  document.getElementById('date').textContent=`${now.getMonth()+1}月${now.getDate()}日`;
+  let sharedToday=a.filter(e=>e.shared).length;
+  document.getElementById('summary').textContent=a.length?`今日は${a.length}件${sharedToday?`（共有${sharedToday}件）`:''}の予定があるよ。`:'今日は予定なし。ゆったりできそう！';
+  document.getElementById('todayN').textContent=`${a.length}件`;list(a,'todayList',true,todayKey);renderHomeSpaces();
   let open=tasks.filter(t=>!t.done).sort((a,b)=>a.deadline.localeCompare(b.deadline));document.getElementById('taskN').textContent=`${open.length}件`;let el=document.getElementById('tasks');el.innerHTML=open.length?open.map(t=>`<div class="event"><div class="time">${fmt(t.deadline)}</div><div class="bar"></div><div><div class="title">${esc(t.title)}</div><div class="meta">この日までに</div></div><button class="tiny" data-done="${t.id}">完了</button></div>`).join(''):'<div class="empty">締切なし</div>';el.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>{let t=tasks.find(x=>x.id===b.dataset.done);t.done=true;save();render()})
 }
 function range(kind){let d=new Date();if(kind==='tomorrow')d.setDate(d.getDate()+1);if(kind==='today'||kind==='tomorrow')return[K(d),K(d)];let day=d.getDay(),delta=(day===0?-6:1-day);let shift=kind==='nextweek'?7:kind==='lastweek'?-7:0;d.setDate(d.getDate()+delta+shift);let a=K(d);d.setDate(d.getDate()+6);return[a,K(d)]}
@@ -495,7 +598,7 @@ function extractAskedDate(q){
 function answerData(q){
   let specific=extractAskedDate(q),r;
   if(specific)r=[specific,specific];else if(/明日/.test(q))r=range('tomorrow');else if(/先週/.test(q))r=range('lastweek');else if(/来週/.test(q))r=range('nextweek');else if(/今週/.test(q))r=range('week');else r=range('today');
-  let a=ev.filter(e=>{
+  let a=allEvents().filter(e=>{
     let d=new Date(r[0]+'T00:00:00');
     while(K(d)<=r[1]){if(eventTouchesDay(e,K(d)))return true;d=addDays(d,1)}
     return false
@@ -525,10 +628,56 @@ function renderAnswer(data){
       gd=addDays(gd,1)
     }
     let head=data.from===data.to?`${fmt(data.from)}の予定`: `${fmt(data.from)}〜${fmt(data.to)}の予定・${data.events.length}件`;
-    d.innerHTML=`<div class="answerHead">📅 ${head}</div>`+Object.entries(groups).map(([k,items])=>{let dt=new Date(k+'T00:00:00'),wd=['日','月','火','水','木','金','土'][dt.getDay()];return `<div class="dayGroup"><div class="dayLabel">${fmt(k)}<small>(${wd})</small></div><div class="dayItems">${items.map(e=>`<div class="dayEvent"><span>${e.date===k?`${e.start}〜${endLabel(e)}`:`前日から〜${e.end}`}</span><b>${esc(e.title)}</b></div>`).join('')}</div></div>`}).join('')
+    d.innerHTML=`<div class="answerHead">📅 ${head}</div>`+Object.entries(groups).map(([k,items])=>{let dt=new Date(k+'T00:00:00'),wd=['日','月','火','水','木','金','土'][dt.getDay()];return `<div class="dayGroup"><div class="dayLabel">${fmt(k)}<small>(${wd})</small></div><div class="dayItems">${items.map(e=>`<div class="dayEvent"><span>${e.date===k?`${e.start}〜${endLabel(e)}`:`前日から〜${e.end}`}</span><b>${esc(e.title)} ${e.shared?`<span class="sourceTag">👥 ${esc(sourceLabel(e))}</span>`:''}</b></div>`).join('')}</div></div>`}).join('')
   }
   c.appendChild(d);c.scrollTop=c.scrollHeight
 }
+
+function renderScopePicker(){
+  let el=document.getElementById('scopePicker');if(!el)return;
+  if(addScope!=='private'&&!groupById(addScope))addScope='private';
+  el.innerHTML=`<button class="scopeChip ${addScope==='private'?'on':''}" type="button" data-scope="private">🔒 プライベート</button>`+groups.map(g=>`<button class="scopeChip ${addScope===g.id?'on':''}" type="button" data-scope="${g.id}">${esc(g.icon)} ${esc(g.name)}</button>`).join('');
+  el.querySelectorAll('[data-scope]').forEach(b=>b.onclick=()=>{addScope=b.dataset.scope;renderScopePicker();updateScopeHint()});
+  updateScopeHint();
+}
+function updateScopeHint(){
+  let hint=document.getElementById('scopeHint');if(!hint)return;
+  if(addScope==='private')hint.textContent='プライベートは自分だけ。ここで追加した予定は共有されません。';
+  else{let g=groupById(addScope);hint.textContent=`「${g?.name||'共有'}」に追加 → グループで共有 ＋ あなたのプライベートにも自動反映。重複警告はあなたにだけ表示。`}
+}
+function renderGroups(){
+  let list=document.getElementById('groupList');if(!list)return;
+  document.getElementById('groupCount').textContent=`${groups.length}グループ`;
+  list.innerHTML=`<button class="groupCard" type="button" data-private-space="1"><div class="groupIcon">🏠</div><div><div class="groupName">プライベート</div><div class="groupMeta">自分だけの予定 ＋ 参加中グループの予定を集約</div></div><div class="chev">›</div></button>`+
+    groups.map(g=>{let n=sharedEv.filter(e=>e.groupId===g.id).length;return `<button class="groupCard" type="button" data-group="${g.id}"><div class="groupIcon">${esc(g.icon)}</div><div><div class="groupName">${esc(g.name)}</div><div class="groupMeta">${g.members.length}人・共有予定 ${n}件</div></div><div class="chev">›</div></button>`}).join('');
+  list.querySelector('[data-private-space]').onclick=()=>show('home');
+  list.querySelectorAll('[data-group]').forEach(b=>b.onclick=()=>openGroup(b.dataset.group));
+}
+function openGroup(id){currentGroupId=id;renderGroupDetail();show('groupDetail')}
+function renderGroupDetail(){
+  let g=groupById(currentGroupId);if(!g)return show('groups');
+  document.getElementById('groupHeroIcon').textContent=g.icon;document.getElementById('groupHeroName').textContent=g.name;document.getElementById('groupHeroMeta').textContent=`${g.members.length}人の共有カレンダー`;
+  document.getElementById('memberCount').textContent=`${g.members.length}人`;document.getElementById('memberRow').innerHTML=g.members.map((m,i)=>`<div class="memberBubble"><span class="memberAvatar">${i?'🙂':'👤'}</span>${esc(m)}${i===0?'（自分）':''}</div>`).join('');
+  let items=sharedEv.filter(e=>e.groupId===g.id).sort((a,b)=>a.date.localeCompare(b.date)||a.start.localeCompare(b.start));
+  document.getElementById('groupEventCount').textContent=`${items.length}件`;
+  document.getElementById('groupEvents').innerHTML=items.length?items.map(e=>`<div class="groupEvent"><div class="groupEventTop"><div><div class="groupEventTime">${fmt(e.date)} ${e.start}〜${endLabel(e)}</div><div class="groupEventTitle">${esc(e.title)}</div><div class="groupEventMeta">共有予定・プライベートにも表示中</div></div><button class="tiny" type="button" data-del-shared="${e.id}">削除</button></div></div>`).join(''):'<div class="groupEmpty">まだ共有予定はないよ。<br>下のボタンから追加してみよう。</div>';
+  document.querySelectorAll('[data-del-shared]').forEach(b=>b.onclick=()=>{removeEvent(b.dataset.delShared,true);save();render();renderGroupDetail();notice('共有予定を削除したよ')});
+  document.getElementById('inviteCode').textContent=g.invite;
+}
+function openGroupAdd(id){
+  addScope=id;type='single';document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.type==='single'));examples();renderScopePicker();show('add');
+}
+function createGroup(){
+  let input=document.getElementById('newGroupName'),name=input.value.trim();if(!name){notice('グループ名を入れてね');return}
+  let id='g_'+Date.now().toString(36),icons=['👥','🌿','🎮','✈️','🍽️','🎬'],icon=icons[groups.length%icons.length],invite=Math.random().toString(36).slice(2,8).toUpperCase();
+  groups.push({id,name,icon,members:['あなた'],invite});input.value='';save();renderGroups();renderScopePicker();renderHomeSpaces();notice(`「${name}」を作ったよ`)
+}
+document.getElementById('createGroup').onclick=createGroup;
+document.getElementById('newGroupName').addEventListener('keydown',e=>{if(e.key==='Enter')createGroup()});
+document.getElementById('groupBack').onclick=()=>show('groups');
+document.getElementById('addToCurrentGroup').onclick=()=>openGroupAdd(currentGroupId);
+document.getElementById('copyInvite').onclick=async()=>{let t=document.getElementById('inviteCode').textContent;try{await navigator.clipboard.writeText(t);notice('招待コードをコピーしたよ')}catch(e){notice(`招待コード：${t}`)}};
+
 document.getElementById('chatForm').onsubmit=e=>{e.preventDefault();let q=document.getElementById('q'),t=q.value.trim();if(!t)return;message(t,true);q.value='';renderAnswer(answerData(t))}
 document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{message(b.textContent,true);renderAnswer(answerData(b.textContent))})
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{type=b.dataset.type;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));examples()})
@@ -552,13 +701,13 @@ document.getElementById('dateInput').addEventListener('input',()=>{
 })
 document.getElementById('bulkPrev').onclick=()=>{if(--bulkM<0){bulkM=11;bulkY--}renderBulk()}
 document.getElementById('bulkNext').onclick=()=>{if(++bulkM>11){bulkM=0;bulkY++}renderBulk()}
-document.getElementById('forceAdd').onclick=()=>{pendingRisk.forEach(p=>ev.push(p.x));let n=pendingRisk.length;pendingRisk=[];save();render();renderConflict();clearAddInput();notice(`${n}件そのまま追加したよ`)};
+document.getElementById('forceAdd').onclick=()=>{pendingRisk.forEach(p=>storeEvent(p.x));let n=pendingRisk.length;pendingRisk=[];save();render();renderConflict();clearAddInput();notice(`${n}件そのまま追加したよ`)};
 document.getElementById('movePlan').onclick=showMove;
 document.getElementById('cancelPending').onclick=()=>{pendingRisk=[];renderConflict();notice('確認中の予定は追加しなかったよ')};
 document.getElementById('quickAdd').onclick=quickAdd;document.getElementById('titleInput').addEventListener('keydown',e=>{if(e.key==='Enter')quickAdd()});
 document.getElementById('startInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('titleInput').focus()});
 function openDay(k){
-  selectedDay=k;calendar();let a=ev.filter(e=>eventTouchesDay(e,k)),t=tasks.filter(x=>!x.done&&x.deadline===k);
+  selectedDay=k;calendar();let a=allEvents().filter(e=>eventTouchesDay(e,k)),t=tasks.filter(x=>!x.done&&x.deadline===k);
   document.getElementById('dayDetail').classList.add('show');document.getElementById('dayTitle').textContent=fmt(k);
   document.getElementById('daySub').textContent=`予定 ${a.length}件${t.length?`・締切 ${t.length}件`:''}`;
   list(a,'dayEvents',true,k);
@@ -568,15 +717,15 @@ function openDay(k){
 function calendar(){
   document.getElementById('month').textContent=`${cy}年 ${cm+1}月`;let g=document.getElementById('grid');g.innerHTML='';let f=new Date(cy,cm,1).getDay(),last=new Date(cy,cm+1,0).getDate();
   for(let i=0;i<f;i++)g.appendChild(document.createElement('div'));
-  for(let d=1;d<=last;d++){let k=`${cy}-${pad(cm+1)}-${pad(d)}`,b=document.createElement('button');b.className='day'+(k===todayKey?' today':'')+(k===selectedDay?' selected':'');b.innerHTML=`${d}${ev.some(e=>eventTouchesDay(e,k))||tasks.some(t=>!t.done&&t.deadline===k)?'<div class="dot"></div>':''}`;b.onclick=()=>openDay(k);g.appendChild(b)}
+  for(let d=1;d<=last;d++){let k=`${cy}-${pad(cm+1)}-${pad(d)}`,b=document.createElement('button');b.className='day'+(k===todayKey?' today':'')+(k===selectedDay?' selected':'');b.innerHTML=`${d}${allEvents().some(e=>eventTouchesDay(e,k))||tasks.some(t=>!t.done&&t.deadline===k)?'<div class="dot"></div>':''}`;b.onclick=()=>openDay(k);g.appendChild(b)}
 }
-document.getElementById('addForDay').onclick=()=>{if(!selectedDay)return;type='single';document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.type==='single'));examples();show('add');document.getElementById('dateInput').value=`${+selectedDay.slice(5,7)}/${+selectedDay.slice(8,10)}`;document.getElementById('startInput').focus()};
+document.getElementById('addForDay').onclick=()=>{if(!selectedDay)return;type='single';document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.type==='single'));examples();show('add');document.getElementById('dateInput').value=`${+selectedDay.slice(5,7)}/${+selectedDay.slice(8,10)}`;singleY=+selectedDay.slice(0,4);singleM=+selectedDay.slice(5,7)-1;renderSingleCal();document.getElementById('startInput').focus()};
 document.getElementById('prev').onclick=()=>{if(--cm<0){cm=11;cy--}calendar();document.getElementById('dayDetail').classList.remove('show')};
 document.getElementById('next').onclick=()=>{if(++cm>11){cm=0;cy++}calendar();document.getElementById('dayDetail').classList.remove('show')};
-function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id))}
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id||(id==='groupDetail'&&x.dataset.tab==='groups')));if(id==='groups')renderGroups();if(id==='groupDetail')renderGroupDetail()}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>show(b.dataset.tab));
 function render(){home();calendar()}
-examples();renderSingleCal();render();
+examples();renderSingleCal();renderGroups();renderScopePicker();render();
 </script>
 </body>
 </html>
