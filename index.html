@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>TalkCal v26</title>
+<title>TalkCal v27</title>
 <style>
 :root{--bg:#f7f7fb;--card:#fff;--ink:#252532;--muted:#8a8d98;--line:#e9e9f0;--p:#7468f6;--soft:#efefff}
 *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#efedff 0,#f8f8fc 30%,#f7f7fb 100%);font-family:system-ui,-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--ink)}
@@ -113,16 +113,33 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;background-ima
 .tabs .tab.active{box-shadow:0 6px 14px rgba(116,104,246,.10)}
 .privateNote{font-size:11px;color:var(--muted);margin:10px 2px 0;text-align:center}.privateNote b{color:#665bc4}
 @media(max-width:380px){.heroBody h1{font-size:24px}.mascotBubble{width:62px;height:62px;border-radius:21px}.nav button{font-size:9px}.nav button b{font-size:17px}}
+
+/* v27: one intuitive add flow — choose first, enter below */
+.brandMark{width:48px;height:48px;border-radius:17px;background:rgba(255,255,255,.72);
+  border:1px solid rgba(255,255,255,.9);display:grid;place-items:center;font-size:22px;
+  color:var(--p);box-shadow:0 10px 28px rgba(70,56,140,.10)}
+.heroBodyClean{grid-template-columns:1fr}
+.unifiedCal,.bulkCal.unifiedCal{margin-top:14px;padding:14px;border:1px solid #ddd8f6;
+  border-radius:18px;background:linear-gradient(180deg,#fbfaff,#f8f7ff)}
+.bulkCal.unifiedCal.show{display:block}
+.bulkCal.unifiedCal .bulkTools,.singleCal.unifiedCal .bulkTools{margin:6px 0 10px}
+.bulkCal.unifiedCal .bulkDay,.singleCal.unifiedCal .singleDay{min-height:48px;border-radius:12px}
+.selectorPanel.show{display:flex;margin-top:14px;padding:12px;border:1px solid #ddd8f6;
+  border-radius:18px;background:#faf9ff}
+#add .row{margin-top:16px}
+#add .example{margin-top:10px}
+#add .tabs{margin-bottom:2px}
+
 </style>
 </head>
 <body>
-<div class="versionBadge">TalkCal v26 ・ ORIGINAL</div>
+<div class="versionBadge">TalkCal v27 ・ UNIFIED ADD</div>
 <main class="app">
 <section id="home" class="screen active">
-  <div class="top brandTop"><div><div class="brandEyebrow">MY TIME COMPANION</div><div class="logo">Talk<i>Cal</i></div></div><div class="avatar">👧🏻</div></div>
+  <div class="top brandTop"><div><div class="brandEyebrow">MY TIME COMPANION</div><div class="logo">Talk<i>Cal</i></div></div><div class="brandMark">✦</div></div>
   <div class="card originalHero">
     <div class="heroKicker">✦ TalkCal Original</div>
-    <div class="heroBody"><div><small id="date"></small><h1 id="heroTitle">今日も、自分のペースで。</h1><p id="summary">予定を確認してるよ。</p></div><div class="mascotBubble">👧🏻</div></div>
+    <div class="heroBody heroBodyClean"><div><small id="date"></small><h1 id="heroTitle">今日も、自分のペースで。</h1><p id="summary">予定を確認してるよ。</p></div></div>
     <div class="heroFooter"><span>● 予定</span><span>◆ 締切</span><span>🔒 自分だけの時間</span></div>
   </div>
   <div class="card"><div class="head"><b class="sectionTitle"><span class="sectionGlyph">☀️</span>今日の予定</b><span id="todayN"></span></div><div id="todayList"></div></div>
@@ -139,7 +156,7 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;background-ima
       <button class="tab" data-type="bulk">一括</button>
       <button class="tab" data-type="deadline">締切</button>
     </div>
-    <div id="repeatKinds" class="repeatKinds">
+    <div id="repeatKinds" class="repeatKinds selectorPanel">
       <button class="repeatKind active" data-repeat="daily">毎日</button>
       <button class="repeatKind" data-repeat="weekday">平日</button>
       <button class="repeatKind" data-repeat="weekendholiday">土日祝</button>
@@ -152,7 +169,7 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;background-ima
       <button type="button" data-rw="0">日</button>
     </div>
     <div id="dateFieldWrap">
-      <div id="singleCal" class="singleCal">
+      <div id="singleCal" class="singleCal unifiedCal">
         <div class="miniCalTitle"><span>📅</span><b id="miniCalTitleText">カレンダーから日付を選ぶ</b></div>
         <div class="bulkTools"><button class="tiny" id="singlePrev" type="button">←</button><b id="singleMonth"></b><button class="tiny" id="singleNext" type="button">→</button></div>
         <div class="week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
@@ -165,18 +182,20 @@ body:before{content:'';position:fixed;inset:0;pointer-events:none;background-ima
         <input class="field" id="dateInput" inputmode="numeric" autocomplete="off" placeholder="例：9/20 または 2027/1/10">
       </details>
     </div>
+
+    <div id="bulkCal" class="bulkCal unifiedCal">
+      <div class="miniCalTitle"><span>📅</span><b>カレンダーから日付を選ぶ</b></div>
+      <div class="bulkTools"><button class="tiny" id="bulkPrev">←</button><b id="bulkMonth"></b><button class="tiny" id="bulkNext">→</button></div>
+      <div class="week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+      <div class="grid" id="bulkGrid"></div>
+      <div class="subtle" id="bulkCount" style="margin-top:9px">0日選択中</div>
+    </div>
     <div class="row">
       <div id="startFieldWrap"><label>時間</label><input class="field" id="startInput" type="text" inputmode="numeric" autocomplete="off" placeholder="例：15:00" maxlength="5"></div>
       <div><label>内容</label><input class="field" id="titleInput" autocomplete="off" placeholder="例：病院"></div>
     </div>
     <div class="example" id="example"></div>
     <div class="notice" id="notice"></div>
-    <div id="bulkCal" class="bulkCal">
-      <div class="bulkTools"><button class="tiny" id="bulkPrev">←</button><b id="bulkMonth"></b><button class="tiny" id="bulkNext">→</button></div>
-      <div class="week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
-      <div class="grid" id="bulkGrid"></div>
-      <div class="subtle" id="bulkCount" style="margin-top:9px">0日選択中</div>
-    </div>
     <div id="conflictBox" class="conflictBox">
       <div class="conflictTitle" id="conflictTitle">⚠️ 近い予定があります</div>
       <div id="conflictList"></div>
@@ -479,7 +498,7 @@ function examples(){
   document.getElementById('repeatKinds').classList.toggle('show',type==='repeat');
   document.getElementById('weekdayPick').classList.toggle('show',type==='repeat'&&repeatKind==='weekly');
   document.getElementById('bulkCal').classList.toggle('show',type==='bulk');
-  let msg={single:'カレンダーで日付を選んで、時間・内容を入力',repeat:'ルールを選んで、時間・内容を入力',bulk:'日付を複数選んで、時間・内容を入力',deadline:'カレンダーで締切日を選んで、内容を入力'};
+  let msg={single:'① 日付を選ぶ → ② 時間・内容を入力',repeat:'① 繰り返し方を選ぶ → ② 時間・内容を入力',bulk:'① 日付を複数選ぶ → ② 時間・内容を入力',deadline:'① 締切日を選ぶ → ② 内容を入力'};
   document.getElementById('example').innerHTML=`<b>かんたん入力：</b> ${msg[type]}`;
   let addLabel=document.getElementById('quickAddLabel'),hint=document.getElementById('addActionHint');
   if(addLabel)addLabel.textContent=type==='deadline'?'締切を追加する':type==='bulk'?'選んだ日すべてに追加する':type==='repeat'?'繰り返し予定を追加する':'この予定を追加する';
