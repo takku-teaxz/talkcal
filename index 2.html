@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TalkCal v26</title>
+<style>
+:root{--bg:#f7f7fb;--card:#fff;--ink:#252532;--muted:#8a8d98;--line:#e9e9f0;--p:#7468f6;--soft:#efefff}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#efedff 0,#f8f8fc 30%,#f7f7fb 100%);font-family:system-ui,-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--ink)}
+.versionBadge{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:9999;background:#17131f;color:#fff;border-radius:999px;padding:5px 10px;font-size:10px;font-weight:900;letter-spacing:.4px;box-shadow:0 4px 14px #0002}.app{max-width:480px;margin:auto;min-height:100vh;padding:18px 14px 110px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.logo{font-size:28px;font-weight:900}.logo i{font-style:normal;color:var(--p)}.avatar{width:44px;height:44px;border-radius:15px;background:#fff;display:grid;place-items:center;border:1px solid var(--line);font-size:21px}
+.card{background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:24px;padding:17px;margin-bottom:13px;box-shadow:0 12px 28px rgba(65,55,130,.055)}
+.hero{background:linear-gradient(135deg,#7468f6,#a8a1ff);color:#fff;border:0}.hero small{opacity:.86}.hero h1{font-size:29px;margin:5px 0}.hero p{margin:0;opacity:.93;line-height:1.5}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.head span{font-size:12px;color:var(--muted)}.screen{display:none}.screen.active{display:block}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}.tab{border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px 6px;font-weight:800;color:#666}.tab.active{background:var(--soft);border:2px solid var(--p);color:var(--p)}
+.repeatKinds{display:none;gap:6px;flex-wrap:wrap;margin:4px 0 12px}.repeatKinds.show{display:flex}
+.weekdayPick{display:none;gap:6px;flex-wrap:wrap;margin:0 0 12px}.weekdayPick.show{display:flex}
+.weekdayPick button{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:#fff;font-weight:800}
+.weekdayPick button.on{background:var(--p);color:#fff;border-color:var(--p)}
+.bulkCal{display:none;margin-top:13px}.bulkCal.show{display:block}
+.bulkDay{min-height:45px;border:1px solid var(--line);border-radius:11px;background:#fff;font-weight:700}
+.bulkDay.on{background:var(--p);color:#fff;border-color:var(--p)}
+.bulkDay.blank{visibility:hidden}.bulkTools{display:flex;justify-content:space-between;align-items:center;margin:8px 0}
+.repeatKind{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-weight:800;color:#666}.repeatKind.active{background:var(--soft);color:var(--p);border-color:var(--p)}
+.inputwrap{display:flex;gap:8px;border:1px solid var(--line);border-radius:18px;padding:7px;background:#fff}.inputwrap input{flex:1;border:0;outline:0;min-width:0;font-size:17px;padding:11px}.addbtn{border:0;background:var(--p);color:#fff;border-radius:14px;padding:0 15px;font-weight:900}.example{margin-top:10px;font-size:13px;color:var(--muted);line-height:1.6}
+.details{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}.details summary{cursor:pointer;font-weight:800;color:#666}label{display:block;font-size:12px;font-weight:800;color:#666;margin:11px 0 6px}.field{width:100%;border:1px solid var(--line);background:#fafafd;border-radius:13px;padding:12px;font-size:16px}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.notice{display:none;margin-top:12px;padding:12px;border-radius:14px;background:#f3f2ff;font-size:13px;line-height:1.5}.notice.show{display:block}
+.event{display:grid;grid-template-columns:58px 5px 1fr auto;gap:9px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)}.event:last-child{border:0}.time{font-weight:900}.bar{height:40px;background:var(--p);border-radius:9px}.title{font-weight:800}.meta{font-size:12px;color:var(--muted);margin-top:2px}.tiny{border:0;background:#f4f4f8;border-radius:10px;padding:7px;color:#777}.empty{text-align:center;color:var(--muted);padding:17px}
+.chat{display:flex;flex-direction:column;gap:9px;max-height:50vh;overflow:auto}.msg{max-width:88%;border-radius:18px;padding:11px 13px;line-height:1.5;font-size:14px;white-space:pre-line}.ai{align-self:flex-start;background:#efeff7}.me{align-self:flex-end;background:var(--p);color:#fff}.composer{display:flex;gap:8px;margin-top:12px;border:1px solid var(--line);border-radius:17px;padding:6px;background:#fff}.composer input{border:0;outline:0;flex:1;min-width:0;padding:10px;font-size:16px}.send{border:0;background:var(--p);color:#fff;width:44px;border-radius:13px;font-weight:900}.chips{display:flex;gap:6px;overflow:auto;padding:9px 0}.chip{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-size:12px}
+.nav{position:fixed;bottom:calc(10px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(452px,calc(100% - 20px));display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:7px;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:22px;box-shadow:0 15px 35px rgba(55,50,100,.14);z-index:1000;pointer-events:auto}.nav button{border:0;background:transparent;border-radius:15px;padding:8px 2px;color:#8b8d99;font-size:11px;font-weight:800;min-width:0;pointer-events:auto;touch-action:manipulation}.nav button b{font-size:20px;display:block}.nav button.active{background:var(--soft);color:var(--p)}
+.week,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.week div{text-align:center;font-size:11px;color:var(--muted)}.day{min-height:55px;border:1px solid var(--line);border-radius:12px;background:#fff;cursor:pointer}.dot{width:6px;height:6px;background:var(--p);border-radius:50%;margin:4px auto}.today{background:var(--soft)}.daydetail{display:none}.daydetail.show{display:block}.daytitle{font-size:22px;font-weight:900;margin-bottom:4px}.subtle{font-size:12px;color:var(--muted)}
+
+.conflictBox{display:none;margin-top:14px;border:1px solid #f1cf74;background:#fffaf0;border-radius:18px;padding:14px}.conflictBox.show{display:block}.conflictTitle{font-weight:900;font-size:16px;margin-bottom:7px}.conflictItem{background:#fff;border:1px solid #f0e5c9;border-radius:13px;padding:10px;margin:8px 0;font-size:13px;line-height:1.55}.conflictBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.conflictBtns button{border:0;border-radius:12px;padding:11px 8px;font-weight:900}.forceBtn{background:#fff0c7;color:#7a5600}.moveBtn{background:var(--p);color:#fff}.cancelBtn{grid-column:1/-1;background:#f1f1f5;color:#666}.suggestions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.suggestions button{border:1px solid #dcd8ff;background:#fff;color:var(--p);border-radius:999px;padding:8px 10px;font-weight:800}
+.answerCard{align-self:stretch;background:#fff;border:1px solid var(--line);border-radius:18px;padding:10px;box-shadow:0 7px 18px rgba(70,60,130,.05)}.answerHead{font-weight:900;margin:2px 4px 8px}.dayGroup{display:grid;grid-template-columns:66px 1fr;gap:8px;padding:9px 5px;border-top:1px solid var(--line)}.dayGroup:first-of-type{border-top:0}.dayLabel{font-weight:900}.dayLabel small{display:block;color:var(--muted);font-size:11px}.dayItems{display:flex;flex-direction:column;gap:4px}.dayEvent{display:grid;grid-template-columns:82px 1fr;gap:7px;font-size:13px}.dayEvent b{font-weight:800}.freeCard{align-self:stretch;background:#eefaf3;border:1px solid #d8f1e1;border-radius:18px;padding:13px}.freeCard b{color:#238553}.chat{max-height:58vh}.msg.aiIntro{background:#efeff7}
+
+</style>
+<style>.day.selected{background:var(--p)!important;color:#fff!important;box-shadow:0 6px 14px rgba(105,84,220,.22)}.day.selected .dot{background:#fff!important}</style>
+<style>
+/* v15: clear primary action */
+.addAction{
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+}
+.primaryAddBtn{
+  width:100%;
+  min-height:58px;
+  border:0;
+  border-radius:18px;
+  background:linear-gradient(135deg,#6954dc,#8b7cff);
+  color:#fff;
+  font-size:17px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  box-shadow:0 12px 26px rgba(105,84,220,.28);
+  cursor:pointer;
+  touch-action:manipulation;
+}
+.primaryAddBtn:active{transform:scale(.985);box-shadow:0 7px 16px rgba(105,84,220,.22)}
+.primaryAddIcon{
+  width:26px;height:26px;border-radius:50%;
+  background:rgba(255,255,255,.2);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:21px;line-height:1;
+}
+.addActionHint{
+  text-align:center;
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+</style>
+<style>
+.singleCal{margin-top:14px;padding:14px;border:1px solid #ddd8f6;border-radius:18px;background:#faf9ff}
+.miniCalTitle{display:flex;align-items:center;gap:7px;margin-bottom:10px;font-size:14px;color:#5748bd}
+.singleDay{min-height:45px;border:1px solid var(--line);border-radius:11px;background:#fff;font-weight:800;color:#444}
+.singleDay.blank{visibility:hidden}
+.singleDay.on{background:var(--p);color:#fff;border-color:var(--p);box-shadow:0 6px 14px rgba(105,84,220,.2)}
+.selectedDateNote{text-align:center;margin-top:10px;font-size:12px;font-weight:800;color:var(--muted)}
+</style><style>
+.directDate{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.directDate summary{cursor:pointer;font-size:13px;font-weight:800;color:var(--muted)}
+</style>
+
+
+
+<style>
+/* v26 TalkCal Original — private-first, simple, cute */
+:root{--p:#7468f6;--p2:#9b8cff;--lav:#eeeaff;--lav2:#f7f4ff;--sky:#eaf6ff;--ink:#252532;--muted:#858894}
+body{background:
+  radial-gradient(circle at 12% 7%,rgba(167,151,255,.25),transparent 28%),
+  radial-gradient(circle at 92% 18%,rgba(168,225,255,.28),transparent 26%),
+  linear-gradient(180deg,#f3f0ff 0,#faf9ff 36%,#f7f7fb 100%);}
+body:before{content:'';position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(rgba(116,104,246,.10) 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(to bottom,#0005,transparent 38%)}
+.app{padding-top:38px}.versionBadge{background:rgba(35,29,58,.88);backdrop-filter:blur(10px)}
+.brandTop{align-items:flex-end}.brandEyebrow{font-size:10px;font-weight:900;letter-spacing:1.3px;color:#8e87b8;margin-bottom:2px}.logo{letter-spacing:-1.3px}.avatar{position:relative;background:linear-gradient(145deg,#fff,#f0ecff);box-shadow:0 8px 22px rgba(103,88,190,.14)}.avatar:after{content:'';position:absolute;right:-2px;bottom:-2px;width:11px;height:11px;border-radius:50%;background:#75d6a1;border:3px solid #fff}
+.card{background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border-color:rgba(226,222,243,.88);box-shadow:0 14px 36px rgba(73,60,130,.065)}
+.originalHero{position:relative;overflow:hidden;background:linear-gradient(135deg,#6558df 0%,#8778f6 48%,#a891ff 100%);padding:20px;color:#fff;box-shadow:0 18px 42px rgba(105,84,220,.24)}
+.originalHero:before{content:'';position:absolute;width:160px;height:160px;border-radius:50%;right:-62px;top:-74px;background:rgba(255,255,255,.14)}
+.originalHero:after{content:'';position:absolute;width:105px;height:105px;border-radius:36px;left:-52px;bottom:-62px;background:rgba(205,236,255,.18);transform:rotate(24deg)}
+.heroKicker{position:relative;z-index:1;display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.8px;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.16)}
+.heroBody{position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-top:12px}.heroBody small{opacity:.86;font-weight:800}.heroBody h1{font-size:27px;line-height:1.2;margin:4px 0 6px}.heroBody p{font-size:13px;line-height:1.55;margin:0;opacity:.94}.mascotBubble{width:72px;height:72px;border-radius:25px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.22);display:grid;place-items:center;font-size:32px;box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+.heroFooter{position:relative;z-index:1;display:flex;gap:7px;flex-wrap:wrap;margin-top:15px}.heroFooter span{font-size:10px;font-weight:800;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,.13)}
+.sectionTitle{display:flex;align-items:center;gap:7px}.sectionGlyph{width:26px;height:26px;border-radius:9px;background:var(--lav);display:grid;place-items:center;font-size:13px}.deadlineGlyph{background:#fff3db}
+.event{border-bottom-color:#efedf6}.event .bar{background:linear-gradient(180deg,var(--p),var(--p2))}.event .title{font-size:14px}
+.empty{border:1px dashed #ddd7f5;background:#fbfaff;border-radius:16px;margin-top:6px;padding:18px 12px}.empty:before{content:'☁️';display:block;font-size:22px;margin-bottom:3px}
+.taskEvent{border:1px solid #ece7ff;border-radius:17px;padding:11px;margin:7px 0;background:linear-gradient(100deg,#f5f1ff,#fff 58%)}.taskEvent .bar{background:#f0a15d}.taskEvent .time{font-size:18px}.taskMeta{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45}.deadlineStrong{font-weight:900;color:#5d50c8}.deadlineToday{color:#c36a2d}
+.dots{height:10px;display:flex;gap:3px;justify-content:center;align-items:center;margin-top:3px}.dot{width:6px;height:6px;border-radius:50%;margin:0;background:var(--p)}.taskDiamond{width:7px;height:7px;border-radius:2px;display:inline-block;transform:rotate(45deg);background:#f0a15d}.day.selected .taskDiamond{background:#fff!important}
+.nav{grid-template-columns:repeat(4,minmax(0,1fr));padding:6px;border-radius:24px;background:rgba(255,255,255,.92)}.nav button{font-size:10px;padding:8px 2px}.nav button b{font-size:19px}.nav button.active{background:linear-gradient(135deg,#efecff,#f6f4ff);box-shadow:inset 0 0 0 1px #e5e0ff}
+.tabs .tab.active{box-shadow:0 6px 14px rgba(116,104,246,.10)}
+.privateNote{font-size:11px;color:var(--muted);margin:10px 2px 0;text-align:center}.privateNote b{color:#665bc4}
+@media(max-width:380px){.heroBody h1{font-size:24px}.mascotBubble{width:62px;height:62px;border-radius:21px}.nav button{font-size:9px}.nav button b{font-size:17px}}
+</style>
+</head>
+<body>
+<div class="versionBadge">TalkCal v26 ・ ORIGINAL</div>
+<main class="app">
+<section id="home" class="screen active">
+  <div class="top brandTop"><div><div class="brandEyebrow">MY TIME COMPANION</div><div class="logo">Talk<i>Cal</i></div></div><div class="avatar">👧🏻</div></div>
+  <div class="card originalHero">
+    <div class="heroKicker">✦ TalkCal Original</div>
+    <div class="heroBody"><div><small id="date"></small><h1 id="heroTitle">今日も、自分のペースで。</h1><p id="summary">予定を確認してるよ。</p></div><div class="mascotBubble">👧🏻</div></div>
+    <div class="heroFooter"><span>● 予定</span><span>◆ 締切</span><span>🔒 自分だけの時間</span></div>
+  </div>
+  <div class="card"><div class="head"><b class="sectionTitle"><span class="sectionGlyph">☀️</span>今日の予定</b><span id="todayN"></span></div><div id="todayList"></div></div>
+  <div class="card"><div class="head"><b class="sectionTitle"><span class="sectionGlyph deadlineGlyph">◆</span>締切</b><span id="taskN"></span></div><div id="tasks"></div><div class="privateNote">締切は <b>締切日＋あと何日</b> だけ。時間は塞がないよ。</div></div>
+</section>
+
+<section id="add" class="screen">
+  <div class="top"><div class="logo">予定を追加</div><div class="avatar">＋</div></div>
+  <div class="card">
+    <div class="head"><b>種類を選ぶ</b><span>1行で追加</span></div>
+    <div class="tabs">
+      <button class="tab active" data-type="single">単日</button>
+      <button class="tab" data-type="repeat">繰り返し</button>
+      <button class="tab" data-type="bulk">一括</button>
+      <button class="tab" data-type="deadline">締切</button>
+    </div>
+    <div id="repeatKinds" class="repeatKinds">
+      <button class="repeatKind active" data-repeat="daily">毎日</button>
+      <button class="repeatKind" data-repeat="weekday">平日</button>
+      <button class="repeatKind" data-repeat="weekendholiday">土日祝</button>
+      <button class="repeatKind" data-repeat="weekly">毎週</button>
+    </div>
+    <div id="weekdayPick" class="weekdayPick">
+      <button type="button" data-rw="1">月</button><button type="button" data-rw="2">火</button>
+      <button type="button" data-rw="3">水</button><button type="button" data-rw="4">木</button>
+      <button type="button" data-rw="5">金</button><button type="button" data-rw="6">土</button>
+      <button type="button" data-rw="0">日</button>
+    </div>
+    <div id="dateFieldWrap">
+      <div id="singleCal" class="singleCal">
+        <div class="miniCalTitle"><span>📅</span><b id="miniCalTitleText">カレンダーから日付を選ぶ</b></div>
+        <div class="bulkTools"><button class="tiny" id="singlePrev" type="button">←</button><b id="singleMonth"></b><button class="tiny" id="singleNext" type="button">→</button></div>
+        <div class="week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+        <div class="grid" id="singleGrid"></div>
+        <div class="selectedDateNote" id="selectedDateNote">日付をタップして選択</div>
+      </div>
+      <details class="directDate">
+        <summary>遠い日付は直接入力</summary>
+        <label id="dateLabel">日付</label>
+        <input class="field" id="dateInput" inputmode="numeric" autocomplete="off" placeholder="例：9/20 または 2027/1/10">
+      </details>
+    </div>
+    <div class="row">
+      <div id="startFieldWrap"><label>時間</label><input class="field" id="startInput" type="text" inputmode="numeric" autocomplete="off" placeholder="例：15:00" maxlength="5"></div>
+      <div><label>内容</label><input class="field" id="titleInput" autocomplete="off" placeholder="例：病院"></div>
+    </div>
+    <div class="example" id="example"></div>
+    <div class="notice" id="notice"></div>
+    <div id="bulkCal" class="bulkCal">
+      <div class="bulkTools"><button class="tiny" id="bulkPrev">←</button><b id="bulkMonth"></b><button class="tiny" id="bulkNext">→</button></div>
+      <div class="week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+      <div class="grid" id="bulkGrid"></div>
+      <div class="subtle" id="bulkCount" style="margin-top:9px">0日選択中</div>
+    </div>
+    <div id="conflictBox" class="conflictBox">
+      <div class="conflictTitle" id="conflictTitle">⚠️ 近い予定があります</div>
+      <div id="conflictList"></div>
+      <div id="moveArea"></div>
+      <div class="conflictBtns">
+        <button id="forceAdd" class="forceBtn">そのまま追加</button>
+        <button id="movePlan" class="moveBtn">時間を動かす</button>
+        <button id="cancelPending" class="cancelBtn">やめる</button>
+      </div>
+    </div>
+    <details class="details">
+      <summary>詳細設定</summary>
+      <div class="row">
+        <div><label>終了時間</label><input class="field" type="text" id="endOverride" inputmode="numeric" autocomplete="off" placeholder="例：09:00" maxlength="5"></div>
+        <div><label>終了日</label>
+          <select class="field" id="endDayOffset">
+            <option value="0">未設定（当日）</option>
+            <option value="1">翌日</option>
+            <option value="2">2日後</option>
+            <option value="3">3日後</option>
+          </select>
+        </div>
+      </div>
+      <label>メモ</label><input class="field" id="memo" placeholder="任意">
+      <div class="subtle" style="margin-top:8px">終了日の指定がなければ当日として扱うよ。夜勤や泊まりは「翌日」を選択。</div>
+    </details>
+
+    <div class="addAction">
+      <button class="primaryAddBtn" id="quickAdd" type="button">
+        <span class="primaryAddIcon">＋</span>
+        <span id="quickAddLabel">この予定を追加する</span>
+      </button>
+      <div class="addActionHint" id="addActionHint">入力した内容をカレンダーに反映します</div>
+    </div>
+  </div>
+</section>
+
+
+
+<section id="chat" class="screen">
+  <div class="top"><div class="logo">あいちゃん</div><div class="avatar">👧🏻</div></div>
+  <div class="card">
+    <div class="head"><b>予定を聞く</b><span>シンプル確認</span></div>
+    <div class="chat" id="messages"><div class="msg ai aiIntro">予定の確認なら聞いてね。「9月20日の予定は？」「10/3空いてる？」みたいな日付指定にも対応したよ！</div></div>
+    <div class="chips">
+      <button class="chip">今日の予定は？</button><button class="chip">明日の予定は？</button>
+      <button class="chip">先週の予定は？</button><button class="chip">来週の予定は？</button><button class="chip">今週忙しい？</button>
+    </div>
+    <form class="composer" id="chatForm"><input id="q" placeholder="例：9月20日の予定は？"><button class="send">↑</button></form>
+  </div>
+</section>
+
+<section id="cal" class="screen">
+  <div class="top"><div class="logo">カレンダー</div><div class="avatar">📅</div></div>
+  <div class="card">
+    <div class="head"><button class="tiny" id="prev">←</button><b id="month"></b><button class="tiny" id="next">→</button></div>
+    <div class="week"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+    <div class="grid" id="grid"></div>
+    <div class="calendarLegend"><span class="legendItem"><i class="legendDot"></i>予定</span><span class="legendItem"><i class="legendTask"></i>進行中の締切</span></div>
+  </div>
+  <div class="card daydetail" id="dayDetail">
+    <div class="daytitle" id="dayTitle"></div>
+    <div class="subtle" id="daySub"></div>
+    <div id="dayEvents" style="margin-top:8px"></div>
+    <button class="addbtn" id="addForDay" style="width:100%;height:46px;margin-top:10px">この日に予定を追加</button>
+  </div>
+</section>
+</main>
+
+<nav class="nav">
+  <button type="button" class="active" data-tab="home"><b>⌂</b>ホーム</button>
+  <button type="button" data-tab="add"><b>＋</b>追加</button>
+  <button type="button" data-tab="chat"><b>💬</b>聞く</button>
+  <button type="button" data-tab="cal"><b>▦</b>カレンダー</button>
+</nav>
+
+<script>
+const pad=n=>String(n).padStart(2,'0'), now=new Date(), todayKey=K(now);
+function K(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+const fmt=k=>{let [y,m,d]=k.split('-');return `${+m}月${+d}日`};
+const mins=t=>{let[a,b]=t.split(':').map(Number);return a*60+b};
+const W={'日':0,'月':1,'火':2,'水':3,'木':4,'金':5,'土':6};
+let ev=JSON.parse(localStorage.getItem('tc_hybrid_v2_ev')||'[]');
+let tasks=JSON.parse(localStorage.getItem('tc_hybrid_v2_tasks')||'[]');
+// v26: group sharing is retired for now. On first launch, keep existing shared data by
+// converting it into ordinary private data so an update never makes the user's plans vanish.
+let legacyShared=JSON.parse(localStorage.getItem('tc_hybrid_v24_shared')||localStorage.getItem('tc_hybrid_v23_shared')||localStorage.getItem('tc_hybrid_v22_shared')||'[]');
+if(localStorage.getItem('tc_v26_groups_retired')!=='1'){
+  legacyShared.forEach(s=>{if(!ev.some(e=>e.id===s.id))ev.push({...s,shared:false,groupId:null})});
+  tasks=tasks.map(t=>({...t,scope:'private'}));
+  localStorage.setItem('tc_v26_groups_retired','1');
+  localStorage.setItem('tc_hybrid_v2_ev',JSON.stringify(ev));
+  localStorage.setItem('tc_hybrid_v2_tasks',JSON.stringify(tasks));
+}
+tasks=tasks.map(t=>({...t,start:t.start||todayKey,scope:'private'}));
+let type='single', repeatKind='daily', cy=now.getFullYear(), cm=now.getMonth(), selectedDay=null;
+let singleY=now.getFullYear(), singleM=now.getMonth();
+let bulkY=now.getFullYear(), bulkM=now.getMonth(), bulkDates=new Set(), weeklyDays=new Set();
+let pendingRisk=[];
+const save=()=>{
+  localStorage.setItem('tc_hybrid_v2_ev',JSON.stringify(ev));
+  localStorage.setItem('tc_hybrid_v2_tasks',JSON.stringify(tasks));
+};
+const allEvents=()=>ev.map(x=>({...x,shared:false,groupId:null}));
+const taskStart=t=>t.start||todayKey;
+function taskActiveOn(t,k){return !t.done&&taskStart(t)<=k&&k<=t.deadline}
+function taskDaysLeft(t,k){let a=new Date(k+'T00:00:00'),b=new Date(t.deadline+'T00:00:00');return Math.max(0,Math.round((b-a)/86400000))}
+function taskStatus(t,k){return k===t.deadline?'本日締切':`あと${taskDaysLeft(t,k)}日`}
+function activeTasksOn(k){return tasks.filter(t=>taskActiveOn(t,k))}
+function renderTaskRow(t,k,withDone=false){let today=k===todayKey;let status=taskStatus(t,k);return `<div class="event taskEvent"><div class="time">◆</div><div class="bar"></div><div><div class="title">${esc(t.title)}</div><div class="taskMeta"><span class="deadlineStrong">${fmt(t.deadline)}締切</span> ・ <span class="${k===t.deadline?'deadlineToday':''}">${status}</span></div></div>${withDone?`<button class="tiny" data-done="${t.id}">完了</button>`:'<span></span>'}</div>`}
+
+function privateConflictForShared(){return false}
+function storeEvent(x){ev.push({...x,shared:false,groupId:null})}
+function removeEvent(id){ev=ev.filter(e=>e.id!==id)}
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function overlap(a,b){
+  let [as,ae]=eventRange(a),[bs,be]=eventRange(b);
+  return as<be&&bs<ae
+}
+function dateAt(k,t){let [y,m,d]=k.split('-').map(Number),[h,mi]=t.split(':').map(Number);return new Date(y,m-1,d,h,mi,0,0).getTime()}
+function eventRange(e){let st=dateAt(e.date,e.start),off=Number(e.endDayOffset||0),ed=K(addDays(new Date(e.date+'T00:00:00'),off));return [st,dateAt(ed,e.end)]}
+function endLabel(e){let off=Number(e.endDayOffset||0);return off?`${off===1?'翌日':off+'日後'} ${e.end}`:e.end}
+function eventTouchesDay(e,k){
+  let ds=dateAt(k,'00:00'),de=dateAt(K(addDays(new Date(k+'T00:00:00'),1)),'00:00');
+  let [es,ee]=eventRange(e);return es<de&&ee>ds
+}
+function displayTimeForDay(e,k){
+  if(e.date===k)return `${e.start}〜${endLabel(e)}`;
+  let off=Math.round((new Date(k+'T00:00:00')-new Date(e.date+'T00:00:00'))/86400000);
+  let final=Number(e.endDayOffset||0)===off;
+  return final?`前日から〜${e.end}`:'前日から継続';
+}
+function addDays(d,n){let x=new Date(d);x.setDate(x.getDate()+n);return x}
+function nextWeekday(day){let d=new Date();let diff=(day-d.getDay()+7)%7;if(diff===0)diff=7;return addDays(d,diff)}
+function parseDateToken(tok){
+  tok=tok.trim();
+  if(tok==='今日') return K(new Date());
+  if(tok==='明日') return K(addDays(new Date(),1));
+  if(tok==='明後日') return K(addDays(new Date(),2));
+  let ymd=tok.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  if(ymd){
+    let d=new Date(+ymd[1],+ymd[2]-1,+ymd[3]);
+    if(d.getFullYear()===+ymd[1]&&d.getMonth()===+ymd[2]-1&&d.getDate()===+ymd[3])return K(d);
+    return null;
+  }
+  let md=tok.match(/^(\d{1,2})[\/\-](\d{1,2})$/);
+  if(md){
+    let d=new Date(now.getFullYear(),+md[1]-1,+md[2]);
+    if(d.getMonth()===+md[1]-1&&d.getDate()===+md[2])return K(d);
+    return null;
+  }
+  let jp=tok.match(/^(\d{1,2})月(\d{1,2})日$/); if(jp)return `${now.getFullYear()}-${pad(+jp[1])}-${pad(+jp[2])}`;
+  let day=tok.match(/^(\d{1,2})日$/); if(day)return `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(+day[1])}`;
+  return null;
+}
+function parseTime(tok){let m=tok.match(/^(\d{1,2})(?::(\d{1,2}))?$/);if(!m)return null;let h=+m[1],mm=+(m[2]||0);if(h>23||mm>59)return null;return `${pad(h)}:${pad(mm)}`}
+function normalizeTypedTime(v){
+  let x=(v||'').trim().replace(/：/g,':');
+  if(/^\d{3,4}$/.test(x)){
+    x=x.padStart(4,'0');
+    x=x.slice(0,2)+':'+x.slice(2);
+  }
+  let m=x.match(/^(\d{1,2}):(\d{1,2})$/);
+  if(!m)return null;
+  let h=Number(m[1]),mi=Number(m[2]);
+  if(h>23||mi>59)return null;
+  return `${pad(h)}:${pad(mi)}`;
+}
+function defaultEnd(start){let m=mins(start)+60,h=Math.floor(m/60)%24,mm=m%60;return `${pad(h)}:${pad(mm)}`}
+function nthMonday(year,month,n){let d=new Date(year,month-1,1),add=(1-d.getDay()+7)%7+(n-1)*7;d.setDate(1+add);return K(d)}
+function japanHolidays(year){
+  let s=new Set([
+    `${year}-01-01`,`${year}-02-11`,`${year}-02-23`,`${year}-04-29`,`${year}-05-03`,`${year}-05-04`,`${year}-05-05`,
+    `${year}-08-11`,`${year}-11-03`,`${year}-11-23`
+  ]);
+  [nthMonday(year,1,2),nthMonday(year,7,3),nthMonday(year,9,3),nthMonday(year,10,2)].forEach(x=>s.add(x));
+  let vernal=Math.floor(20.8431+0.242194*(year-1980)-Math.floor((year-1980)/4));
+  let autumn=Math.floor(23.2488+0.242194*(year-1980)-Math.floor((year-1980)/4));
+  s.add(`${year}-03-${pad(vernal)}`); s.add(`${year}-09-${pad(autumn)}`);
+  let base=[...s].sort(); base.forEach(k=>{let d=new Date(k+'T00:00:00');if(d.getDay()===0){let x=addDays(d,1);while(s.has(K(x)))x=addDays(x,1);s.add(K(x))}});
+  return s;
+}
+function isHoliday(d){return japanHolidays(d.getFullYear()).has(K(d))}
+function matchesRepeat(d,kind,weeklyDays=[]){
+  if(kind==='daily')return true;
+  if(kind==='weekday')return d.getDay()>=1&&d.getDay()<=5&&!isHoliday(d);
+  if(kind==='weekendholiday')return d.getDay()===0||d.getDay()===6||isHoliday(d);
+  if(kind==='weekly')return weeklyDays.includes(d.getDay());
+  return false;
+}
+function notice(t){let n=document.getElementById('notice');n.textContent=t;n.classList.add('show');setTimeout(()=>n.classList.remove('show'),4500)}
+function parseDateField(text){
+  text=(text||'').trim();
+  return parseDateToken(text);
+}
+function parseQuick(){
+  let title=document.getElementById('titleInput').value.trim();
+  if(type==='deadline'){
+    let d=parseDateField(document.getElementById('dateInput').value);
+    if(!d)return {error:'締切日を 9/25 のように入れてね'};
+    if(!title)return {error:'内容を入れてね'};
+    return {kind:'deadline',deadline:d,title}
+  }
+  let start=normalizeTypedTime(document.getElementById('startInput').value);
+  if(!start)return {error:'時間を 15:00 のように入れてね'};
+  if(!title)return {error:'内容を入れてね'};
+  if(type==='single'){
+    let d=parseDateField(document.getElementById('dateInput').value);
+    if(!d)return {error:'日付を 9/20 のように入れてね'};
+    return {kind:'events',dates:[d],start,title,rule:'single'}
+  }
+  if(type==='repeat'){
+    let days=[...weeklyDays];
+    if(repeatKind==='weekly'&&!days.length)return {error:'曜日を選んでね'};
+    let dates=[],cur=addDays(new Date(),1),stop=addDays(new Date(),56);
+    for(;cur<=stop;cur=addDays(cur,1))if(matchesRepeat(cur,repeatKind,days))dates.push(K(cur));
+    return {kind:'events',dates,start,title,rule:repeatKind}
+  }
+  if(type==='bulk'){
+    if(!bulkDates.size)return {error:'カレンダーから日付を選んでね'};
+    return {kind:'events',dates:[...bulkDates].sort(),start,title,rule:'bulk'}
+  }
+}
+function riskFor(x){
+  let [xs,xe]=eventRange(x);
+  return allEvents().map(y=>{
+    let [ys,ye]=eventRange(y);
+
+    // Compare the whole occupied time ranges, not only the two start times.
+    // Even when an end time was not entered, TalkCal already assigns its
+    // internal default end (normally +1h), so use that same displayed range
+    // for conflict detection too.
+    let rangeOverlap=xs<ye&&ys<xe;
+
+    // Only when the ranges do not overlap, fall back to the "nearby" warning.
+    let near=Math.abs(xs-ys)<=60*60*1000;
+
+    return rangeOverlap?{event:y,kind:'overlap'}:
+           near?{event:y,kind:'near'}:null;
+  }).filter(Boolean)
+}
+function renderConflict(){
+  let box=document.getElementById('conflictBox');
+  if(!pendingRisk.length){box.classList.remove('show');document.getElementById('moveArea').innerHTML='';return}
+  box.classList.add('show');
+  let hasOverlap=pendingRisk.some(p=>p.hits.some(h=>h.kind==='overlap'));
+  document.getElementById('conflictTitle').textContent=hasOverlap?'🔴 予定が重なっています':'🟡 近い予定があります';
+  document.getElementById('conflictList').innerHTML=pendingRisk.map(p=>`<div class="conflictItem"><b>${fmt(p.x.date)} ${p.x.start}　${esc(p.x.title)}</b><br>${p.hits.map(h=>`${h.kind==='overlap'?'時間帯が重複':'前後1時間以内'}：${h.event.start}〜${endLabel(h.event)} ${esc(h.event.title)}`).join('<br>')}</div>`).join('');
+}
+function clearAddInput(){
+  // v23 微調整①: 日付が紫で選択されたままなら、内部の日付も保持する。
+  // 同じ日に続けて予定を入れる時、日付を毎回選び直さなくていい。
+  document.getElementById('startInput').value='';
+  document.getElementById('titleInput').value='';
+  document.getElementById('endOverride').value='';
+  document.getElementById('endDayOffset').value='0';
+  document.getElementById('memo').value='';
+  if(type==='bulk'){bulkDates.clear();renderBulk()}
+  if(type==='single'||type==='deadline')renderSingleCal();
+}
+function quickAdd(){
+  let p=parseQuick();if(p.error){notice(p.error);return}
+  if(p.kind==='deadline'){tasks.push({id:String(Date.now()),title:p.title,deadline:p.deadline,start:todayKey,scope:'private',done:false});save();render();clearAddInput();notice('締切を追加したよ。締切日と残り日数を表示するね');return}
+  let rawEnd=document.getElementById('endOverride').value.trim();
+  let explicitEnd=rawEnd?normalizeTypedTime(rawEnd):'';
+  if(rawEnd&&!explicitEnd){notice('終了時間は 09:00 のように入力してね');return}
+  if(explicitEnd)document.getElementById('endOverride').value=explicitEnd;
+  let endDayOffset=Number(document.getElementById('endDayOffset').value||0);
+  let end=explicitEnd||defaultEnd(p.start);
+  if(explicitEnd&&endDayOffset===0&&mins(end)<=mins(p.start)){notice('当日終了なら、終了時間は開始より後にしてね。夜勤や泊まりは終了日を「翌日」にしてね');return}
+  if(!explicitEnd&&endDayOffset>0){notice('翌日以降を選ぶときは終了時間も入れてね');return}
+  let memo=document.getElementById('memo').value.trim(),safe=[];pendingRisk=[];
+  p.dates.forEach(date=>{let x={id:String(Date.now()+Math.random()),date,start:p.start,end,title:p.title,memo,recurrence:p.rule,endExplicit:!!explicitEnd,endDayOffset:explicitEnd?endDayOffset:0,shared:false,groupId:null};let hits=riskFor(x);hits.length?pendingRisk.push({x,hits}):safe.push(x)});
+  safe.forEach(storeEvent);save();render();
+  if(pendingRisk.length){renderConflict();notice(safe.length?`${safe.length}件は追加したよ。近い予定だけ確認してね`:'追加前に確認してね')}
+  else{clearAddInput();renderConflict();notice(`${safe.length}件追加したよ`)}
+}
+function findSuggestions(p){
+  let dur=Math.max(30,(eventRange(p.x)[1]-eventRange(p.x)[0])/60000),base=mins(p.x.start),out=[];if(dur>720)return out;
+  for(let step=1;step<=12&&out.length<4;step++)for(let sign of [1,-1]){
+    let m=base+sign*step*30;if(m<0||m+dur>1440)continue;
+    let st=`${pad(Math.floor(m/60))}:${pad(m%60)}`,en=`${pad(Math.floor((m+dur)/60))}:${pad((m+dur)%60)}`;
+    let cand={...p.x,start:st,end:en,endDayOffset:0};if(!riskFor(cand).length&&!out.some(x=>x.start===st))out.push(cand)
+  }
+  return out.sort((a,b)=>mins(a.start)-mins(b.start))
+}
+function showMove(){
+  if(!pendingRisk.length)return;let p=pendingRisk[0],sug=findSuggestions(p),a=document.getElementById('moveArea');
+  a.innerHTML=`<div class="conflictItem"><b>${fmt(p.x.date)} の空いていそうな時間</b><div class="suggestions">${sug.length?sug.map((x,i)=>`<button data-sug="${i}">${x.start}〜${x.end}</button>`).join(''):'候補が見つからなかったよ'}</div></div>`;
+  a.querySelectorAll('[data-sug]').forEach(b=>b.onclick=()=>{let cand=sug[+b.dataset.sug];storeEvent(cand);pendingRisk.shift();save();render();renderConflict();if(!pendingRisk.length){clearAddInput();notice('時間を動かして追加したよ')}else{showMove()}})
+}
+
+function examples(){
+  let dateWrap=document.getElementById('dateFieldWrap'), startWrap=document.getElementById('startFieldWrap');
+  dateWrap.style.display=(type==='single'||type==='deadline')?'block':'none';
+  startWrap.style.display=type==='deadline'?'none':'block';
+  document.getElementById('dateLabel').textContent=type==='deadline'?'締切日':'日付';
+  document.getElementById('dateInput').placeholder=type==='deadline'?'例：9/25':'例：9/20';
+  document.getElementById('titleInput').placeholder=type==='deadline'?'例：資料提出':'例：病院';
+  document.getElementById('repeatKinds').classList.toggle('show',type==='repeat');
+  document.getElementById('weekdayPick').classList.toggle('show',type==='repeat'&&repeatKind==='weekly');
+  document.getElementById('bulkCal').classList.toggle('show',type==='bulk');
+  let msg={single:'カレンダーで日付を選んで、時間・内容を入力',repeat:'ルールを選んで、時間・内容を入力',bulk:'日付を複数選んで、時間・内容を入力',deadline:'カレンダーで締切日を選んで、内容を入力'};
+  document.getElementById('example').innerHTML=`<b>かんたん入力：</b> ${msg[type]}`;
+  let addLabel=document.getElementById('quickAddLabel'),hint=document.getElementById('addActionHint');
+  if(addLabel)addLabel.textContent=type==='deadline'?'締切を追加する':type==='bulk'?'選んだ日すべてに追加する':type==='repeat'?'繰り返し予定を追加する':'この予定を追加する';
+  if(hint)hint.textContent=type==='deadline'?'登録日から締切日まで表示。時間は占有せず、重複判定にも入りません':type==='bulk'?'選択したすべての日に反映します':'入力した内容をカレンダーに反映します';
+  let singleCal=document.getElementById('singleCal');
+  let miniTitle=document.getElementById('miniCalTitleText');
+  if(singleCal)singleCal.style.display=(type==='single'||type==='deadline')?'block':'none';
+  if(miniTitle)miniTitle.textContent=type==='deadline'?'締切日をカレンダーから選ぶ':'カレンダーから日付を選ぶ';
+  if(type==='single'||type==='deadline')renderSingleCal();
+  if(type==='bulk')renderBulk()
+}
+
+function singleInputKey(){
+  let v=document.getElementById('dateInput').value.trim();
+  let ymd=v.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  let md=v.match(/^(\d{1,2})[\/\-](\d{1,2})$/),dt;
+  if(ymd)dt=new Date(+ymd[1],+ymd[2]-1,+ymd[3]);
+  else if(md)dt=new Date(now.getFullYear(),+md[1]-1,+md[2]);
+  else return null;
+  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+}
+function renderSingleCal(){
+  let box=document.getElementById('singleGrid'),label=document.getElementById('singleMonth');if(!box||!label)return;
+  label.textContent=`${singleY}年 ${singleM+1}月`;
+  let first=new Date(singleY,singleM,1),last=new Date(singleY,singleM+1,0),selected=singleInputKey(),html='';
+  for(let i=0;i<first.getDay();i++)html+='<button class="singleDay blank" type="button"></button>';
+  for(let d=1;d<=last.getDate();d++){let dt=new Date(singleY,singleM,d),k=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;html+=`<button class="singleDay${k===selected?' on':''}" type="button" data-single-date="${k}">${d}</button>`}
+  box.innerHTML=html;
+  let note=document.getElementById('selectedDateNote');
+  if(note){
+    if(selected){
+      let sd=new Date(selected+'T00:00:00');
+      note.textContent=`選択中：${sd.getMonth()+1}月${sd.getDate()}日`;
+    }else{
+      note.textContent='日付をタップして選択';
+    }
+  }
+  box.querySelectorAll('[data-single-date]').forEach(b=>b.onclick=()=>{
+    let dt=new Date(b.dataset.singleDate+'T00:00:00');
+    document.getElementById('dateInput').value=`${dt.getMonth()+1}/${dt.getDate()}`;
+    renderSingleCal();
+  });
+}
+
+function renderBulk(){
+  document.getElementById('bulkMonth').textContent=`${bulkY}年 ${bulkM+1}月`;
+  let g=document.getElementById('bulkGrid');g.innerHTML='';
+  let f=new Date(bulkY,bulkM,1).getDay(),last=new Date(bulkY,bulkM+1,0).getDate();
+  for(let i=0;i<f;i++){let x=document.createElement('button');x.className='bulkDay blank';g.appendChild(x)}
+  for(let d=1;d<=last;d++){
+    let k=`${bulkY}-${pad(bulkM+1)}-${pad(d)}`,b=document.createElement('button');
+    b.type='button';b.className='bulkDay'+(bulkDates.has(k)?' on':'');b.textContent=d;
+    b.onclick=()=>{bulkDates.has(k)?bulkDates.delete(k):bulkDates.add(k);renderBulk()};
+    g.appendChild(b)
+  }
+  document.getElementById('bulkCount').textContent=`${bulkDates.size}日選択中`
+}
+
+function list(a,id,del=false,viewDate=null){
+  let x=document.getElementById(id);
+  let sorted=[...a].sort((a,b)=>{
+    if(viewDate){let aa=a.date===viewDate?mins(a.start):-1,bb=b.date===viewDate?mins(b.start):-1;return aa-bb}
+    return a.date.localeCompare(b.date)||a.start.localeCompare(b.start)
+  });
+  x.innerHTML=sorted.length?sorted.map(e=>{
+    let carry=viewDate&&e.date!==viewDate;
+    let mainTime=carry?`〜${e.end}`:e.start;
+    let meta=carry?`前日${e.start}から継続・${e.end}まで`:`${fmt(e.date)} ${e.start}〜${endLabel(e)}`;
+    let action=del?`<button class="tiny" data-del-private="${e.id}">削除</button>`:'';
+    return `<div class="event"><div class="time">${mainTime}</div><div class="bar"></div><div><div class="title">${esc(e.title)}</div><div class="meta">${meta}</div></div>${action}</div>`
+  }).join(''):'<div class="empty">今日は余白の日。</div>';
+  if(del)x.querySelectorAll('[data-del-private]').forEach(b=>b.onclick=()=>{removeEvent(b.dataset.delPrivate);save();render();if(selectedDay)openDay(selectedDay)})
+}
+function home(){
+  let a=allEvents().filter(e=>eventTouchesDay(e,todayKey));
+  let open=tasks.filter(t=>!t.done).sort((a,b)=>a.deadline.localeCompare(b.deadline));
+  document.getElementById('date').textContent=`${now.getMonth()+1}月${now.getDate()}日`;
+  let hero=document.getElementById('heroTitle');
+  if(hero)hero.textContent=a.length>=4?'今日はちょっとにぎやか。':a.length?'今日も、自分のペースで。':'今日は余白の日。';
+  document.getElementById('summary').textContent=a.length?`今日は${a.length}件の予定があるよ。${open.length?`締切は${open.length}件。`:''}`:open.length?`時間を使う予定はなし。締切は${open.length}件あるよ。`:'予定も締切もなし。ゆったりできそう！';
+  document.getElementById('todayN').textContent=`${a.length}件`;list(a,'todayList',true,todayKey);
+  document.getElementById('taskN').textContent=`${open.length}件`;let el=document.getElementById('tasks');el.innerHTML=open.length?open.map(t=>renderTaskRow(t,todayKey,true)).join(''):'<div class="empty">締切なし。身軽だね。</div>';el.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>{let t=tasks.find(x=>x.id===b.dataset.done);t.done=true;save();render()})
+}
+function range(kind){let d=new Date();if(kind==='tomorrow')d.setDate(d.getDate()+1);if(kind==='today'||kind==='tomorrow')return[K(d),K(d)];let day=d.getDay(),delta=(day===0?-6:1-day);let shift=kind==='nextweek'?7:kind==='lastweek'?-7:0;d.setDate(d.getDate()+delta+shift);let a=K(d);d.setDate(d.getDate()+6);return[a,K(d)]}
+function extractAskedDate(q){
+  let m=q.match(/(\d{1,2})月(\d{1,2})日/);if(m)return `${now.getFullYear()}-${pad(+m[1])}-${pad(+m[2])}`;
+  m=q.match(/(\d{1,2})[\/\-](\d{1,2})/);if(m)return `${now.getFullYear()}-${pad(+m[1])}-${pad(+m[2])}`;
+  m=q.match(/(?:^|[^\d])(\d{1,2})日/);if(m)return `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(+m[1])}`;
+  return null;
+}
+function answerData(q){
+  let specific=extractAskedDate(q),r;
+  if(specific)r=[specific,specific];else if(/明日/.test(q))r=range('tomorrow');else if(/先週/.test(q))r=range('lastweek');else if(/来週/.test(q))r=range('nextweek');else if(/今週/.test(q))r=range('week');else r=range('today');
+  let a=allEvents().filter(e=>{
+    let d=new Date(r[0]+'T00:00:00');
+    while(K(d)<=r[1]){if(eventTouchesDay(e,K(d)))return true;d=addDays(d,1)}
+    return false
+  }).sort((a,b)=>eventRange(a)[0]-eventRange(b)[0]);
+  if(/忙し/.test(q))return {type:'text',text:a.length>=8?`今週は${a.length}件。ちょっと忙しめだよ。`:a.length>=4?`今週は${a.length}件。ほどよく予定が入ってるよ。`:`今週は${a.length}件。比較的ゆったりしてるよ。`};
+  let at=tasks.filter(t=>{let d=new Date(r[0]+'T00:00:00');while(K(d)<=r[1]){if(taskActiveOn(t,K(d)))return true;d=addDays(d,1)}return false});
+  if(/空いて|ひま|暇/.test(q)&&r[0]===r[1])return {type:'free',date:r[0],events:a,tasks:activeTasksOn(r[0])};
+  return {type:'events',from:r[0],to:r[1],events:a,tasks:at}
+}
+function message(t,me=false){let c=document.getElementById('messages'),d=document.createElement('div');d.className='msg '+(me?'me':'ai');d.textContent=t;c.appendChild(d);c.scrollTop=c.scrollHeight}
+function renderAnswer(data){
+  let c=document.getElementById('messages');
+  if(data.type==='text'){message(data.text);return}
+  if(data.type==='free'){
+    if(!data.events.length){let d=document.createElement('div');d.className='freeCard';let tt=(data.tasks||[]);d.innerHTML=`<b>✓ ${fmt(data.date)}は空いてるよ</b><div style="margin-top:5px">時間を使う予定はなし！${tt.length?`<br>📋 進行中の締切 ${tt.length}件（空き時間は塞がないよ）`:''}</div>`;c.appendChild(d)}
+    else{
+      let used=data.events.map(e=>`${e.date===data.date?`${e.start}〜${endLabel(e)}`:`前日から〜${e.end}`} ${esc(e.title)}`).join('<br>');let d=document.createElement('div');d.className='freeCard';d.innerHTML=`<b>${fmt(data.date)}の予定</b><div style="margin-top:6px">${used}</div>`;c.appendChild(d)
+    }c.scrollTop=c.scrollHeight;return
+  }
+  let d=document.createElement('div');d.className='answerCard';
+  let taskData=data.tasks||[];
+  if(!data.events.length&&!taskData.length){d.innerHTML=`<div class="answerHead">${fmt(data.from)}${data.from!==data.to?'〜'+fmt(data.to):''}</div><div class="empty">予定なしだよ</div>`}
+  else{
+    let groups={};
+    let gd=new Date(data.from+'T00:00:00');
+    while(K(gd)<=data.to){
+      let k=K(gd),items=data.events.filter(e=>eventTouchesDay(e,k)),tt=taskData.filter(t=>taskActiveOn(t,k));
+      if(items.length||tt.length)groups[k]={items,tt};
+      gd=addDays(gd,1)
+    }
+    let head=data.from===data.to?`${fmt(data.from)}の予定`: `${fmt(data.from)}〜${fmt(data.to)}の予定`;
+    d.innerHTML=`<div class="answerHead">📅 ${head}</div>`+Object.entries(groups).map(([k,v])=>{let dt=new Date(k+'T00:00:00'),wd=['日','月','火','水','木','金','土'][dt.getDay()];return `<div class="dayGroup"><div class="dayLabel">${fmt(k)}<small>(${wd})</small></div><div class="dayItems">${v.items.map(e=>`<div class="dayEvent"><span>${e.date===k?`${e.start}〜${endLabel(e)}`:`前日から〜${e.end}`}</span><b>${esc(e.title)}</b></div>`).join('')}${v.tt.map(t=>`<div class="dayEvent"><span>◆ ${fmt(t.deadline)}締切・${taskStatus(t,k)}</span><b>${esc(t.title)}</b></div>`).join('')}</div></div>`}).join('')
+  }
+  c.appendChild(d);c.scrollTop=c.scrollHeight
+}
+
+document.getElementById('chatForm').onsubmit=e=>{e.preventDefault();let q=document.getElementById('q'),t=q.value.trim();if(!t)return;message(t,true);q.value='';renderAnswer(answerData(t))}
+document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{message(b.textContent,true);renderAnswer(answerData(b.textContent))})
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{type=b.dataset.type;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));examples()})
+document.querySelectorAll('.repeatKind').forEach(b=>b.onclick=()=>{repeatKind=b.dataset.repeat;document.querySelectorAll('.repeatKind').forEach(x=>x.classList.toggle('active',x===b));examples()})
+
+document.getElementById('startInput').addEventListener('blur',e=>{
+  let n=normalizeTypedTime(e.target.value);if(n)e.target.value=n;
+});
+document.getElementById('endOverride').addEventListener('blur',e=>{
+  let n=normalizeTypedTime(e.target.value);
+  if(n)e.target.value=n;
+});
+document.querySelectorAll('[data-rw]').forEach(b=>b.onclick=()=>{let d=+b.dataset.rw;weeklyDays.has(d)?weeklyDays.delete(d):weeklyDays.add(d);b.classList.toggle('on',weeklyDays.has(d))})
+document.getElementById('singlePrev').onclick=()=>{if(--singleM<0){singleM=11;singleY--}renderSingleCal()}
+document.getElementById('singleNext').onclick=()=>{if(++singleM>11){singleM=0;singleY++}renderSingleCal()}
+document.getElementById('dateInput').addEventListener('input',()=>{
+  let v=document.getElementById('dateInput').value.trim(),ymd=v.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/),m=v.match(/^(\d{1,2})[\/\-](\d{1,2})$/);
+  if(ymd){singleY=+ymd[1];singleM=+ymd[2]-1}
+  else if(m){singleY=now.getFullYear();singleM=+m[1]-1}
+  renderSingleCal()
+})
+document.getElementById('bulkPrev').onclick=()=>{if(--bulkM<0){bulkM=11;bulkY--}renderBulk()}
+document.getElementById('bulkNext').onclick=()=>{if(++bulkM>11){bulkM=0;bulkY++}renderBulk()}
+document.getElementById('forceAdd').onclick=()=>{pendingRisk.forEach(p=>storeEvent(p.x));let n=pendingRisk.length;pendingRisk=[];save();render();renderConflict();clearAddInput();notice(`${n}件そのまま追加したよ`)};
+document.getElementById('movePlan').onclick=showMove;
+document.getElementById('cancelPending').onclick=()=>{pendingRisk=[];renderConflict();notice('確認中の予定は追加しなかったよ')};
+document.getElementById('quickAdd').onclick=quickAdd;document.getElementById('titleInput').addEventListener('keydown',e=>{if(e.key==='Enter')quickAdd()});
+document.getElementById('startInput').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('titleInput').focus()});
+function openDay(k){
+  selectedDay=k;calendar();let a=allEvents().filter(e=>eventTouchesDay(e,k)),t=activeTasksOn(k);
+  document.getElementById('dayDetail').classList.add('show');document.getElementById('dayTitle').textContent=fmt(k);
+  document.getElementById('daySub').textContent=`予定 ${a.length}件${t.length?`・締切 ${t.length}件`:''}`;
+  list(a,'dayEvents',true,k);
+  if(t.length)document.getElementById('dayEvents').insertAdjacentHTML('beforeend',t.map(x=>renderTaskRow(x,k,false)).join(''));
+  document.getElementById('dayDetail').scrollIntoView({behavior:'smooth',block:'nearest'})
+}
+function calendar(){
+  document.getElementById('month').textContent=`${cy}年 ${cm+1}月`;let g=document.getElementById('grid');g.innerHTML='';let f=new Date(cy,cm,1).getDay(),last=new Date(cy,cm+1,0).getDate();
+  for(let i=0;i<f;i++)g.appendChild(document.createElement('div'));
+  for(let d=1;d<=last;d++){let k=`${cy}-${pad(cm+1)}-${pad(d)}`,b=document.createElement('button');b.className='day'+(k===todayKey?' today':'')+(k===selectedDay?' selected':'');let items=allEvents().filter(e=>eventTouchesDay(e,k));let marks=`${items.length?'<span class="dot"></span>':''}${activeTasksOn(k).length?'<span class="taskDiamond"></span>':''}`;b.innerHTML=`${d}${marks?`<div class="dots">${marks}</div>`:''}`;b.onclick=()=>openDay(k);g.appendChild(b)}
+}
+document.getElementById('addForDay').onclick=()=>{if(!selectedDay)return;type='single';document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.type==='single'));examples();show('add');document.getElementById('dateInput').value=`${+selectedDay.slice(5,7)}/${+selectedDay.slice(8,10)}`;singleY=+selectedDay.slice(0,4);singleM=+selectedDay.slice(5,7)-1;renderSingleCal();document.getElementById('startInput').focus()};
+document.getElementById('prev').onclick=()=>{if(--cm<0){cm=11;cy--}calendar();document.getElementById('dayDetail').classList.remove('show')};
+document.getElementById('next').onclick=()=>{if(++cm>11){cm=0;cy++}calendar();document.getElementById('dayDetail').classList.remove('show')};
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id))}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+function render(){home();calendar()}
+save();examples();renderSingleCal();render();
+</script>
+</body>
+</html>
