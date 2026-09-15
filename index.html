@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Timear Tester v3</title>
+<title>Timear Tester v4</title>
 <style>
 :root{--bg:#f7f7fb;--card:#fff;--ink:#252532;--muted:#8a8d98;--line:#e9e9f0;--p:#7468f6;--soft:#efefff}
 *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#efedff 0,#f8f8fc 30%,#f7f7fb 100%);font-family:system-ui,-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--ink)}
@@ -284,19 +284,38 @@ body:before{
 .completedTask{opacity:.72}
 .completedTask .title{text-decoration:line-through;text-decoration-thickness:1px}
 
+
+/* Tester 04 — functional home */
+.nextLabel{font-size:10px;font-weight:900;letter-spacing:1.4px;opacity:.78;margin-top:2px}
+.originalHero #heroTitle{font-size:31px;margin:3px 0 2px}.nextTime{font-size:15px!important;font-weight:900;margin:0!important;opacity:.98!important}
+.timearMessage{margin-top:13px!important;padding-top:11px;border-top:1px solid rgba(255,255,255,.22);font-size:12px!important;opacity:.86!important}
+.homeHeadActions{display:flex;align-items:center;gap:8px}.homePlus{border:0;background:var(--soft);color:var(--p);border-radius:999px;padding:7px 10px;font-weight:900}
+.homeQuick{display:none;background:#f7fbff;border:1px solid #dbeeff;border-radius:16px;padding:10px;margin:10px 0}.homeQuick.show{display:block}
+.homeQuickRow{display:grid;grid-template-columns:84px 1fr auto;gap:6px}.homeQuickRow input{min-width:0;border:1px solid var(--line);border-radius:11px;padding:10px;font-size:14px}.homeQuickRow button,.detailSave{border:0;background:var(--p);color:white;border-radius:11px;padding:0 12px;font-weight:900}
+.homeDetailLink{border:0;background:transparent;color:var(--p);font-size:12px;font-weight:800;margin-top:8px;padding:3px}
+#todayList .event{cursor:pointer;border-radius:13px;padding-left:5px;padding-right:5px}#todayList .event:active{background:#f4f9ff}
+.detailOverlay{display:none;position:fixed;inset:0;background:#17203366;z-index:3000;align-items:flex-end;justify-content:center}.detailOverlay.show{display:flex}
+.detailSheet{width:min(480px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:26px 26px 0 0;padding:12px 18px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -20px 50px #0002}
+.detailHandle{width:42px;height:5px;border-radius:99px;background:#d9dce4;margin:0 auto 12px}.detailTop{display:flex;justify-content:space-between;align-items:center;font-size:18px}.detailTop button{border:0;background:#f2f3f6;width:34px;height:34px;border-radius:50%;font-size:20px}
+.detailTitle{font-size:25px;font-weight:900;margin:18px 0 5px}.detailInfo{padding:11px 0;border-bottom:1px solid var(--line);line-height:1.55}.detailInfo small{display:block;color:var(--muted);font-weight:800;margin-bottom:2px}.detailMemoBox{white-space:pre-wrap;background:#f7f8fb;border-radius:14px;padding:12px;margin-top:10px;min-height:44px}
+.detailActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}.detailActions button{border:0;border-radius:13px;padding:12px;font-weight:900;background:var(--soft);color:var(--p)}.detailActions .danger{background:#fff1f1;color:#c54b4b}
+.detailEditForm{display:none;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.detailEditForm.show{display:block}.editMemo{min-height:85px;resize:vertical}.editColors{display:flex;gap:8px;margin:7px 0 14px}.editColor{width:32px;height:32px;border-radius:50%;border:4px solid white;box-shadow:0 0 0 1px #ddd}.editColor.on{box-shadow:0 0 0 3px #b9dcff}.detailSave{width:100%;height:46px}
+
 </style>
 </head>
 <body>
-<div class="versionBadge">Timear ・ TESTER 03</div>
+<div class="versionBadge">Timear ・ TESTER 04</div>
 <main class="app">
 <section id="home" class="screen active">
   <div class="top brandTop"><div><div class="brandEyebrow">Adding gentle color to your days.</div><img class="timearLogo" src="timear-logo.png" alt="Timear"></div></div>
   <div class="card originalHero">
     <div class="heroKicker">✦ Timear Original</div>
-    <div class="heroBody heroBodyClean"><div><small id="date"></small><h1 id="heroTitle">今日も、自分のペースで。</h1><p id="summary">予定を確認してるよ。</p></div></div>
+    <div class="heroBody heroBodyClean"><div><small id="date"></small><div class="nextLabel" id="nextLabel">NEXT</div><h1 id="heroTitle">次の予定を確認中...</h1><p class="nextTime" id="nextTime"></p><p class="timearMessage" id="summary">今日のひとこと</p></div></div>
     <div class="heroFooter"><span>● 予定</span><span>◆ 締切</span><span>🔒 自分だけの時間</span></div>
   </div>
-  <div class="card"><div class="head"><b class="sectionTitle"><span class="sectionGlyph">☀️</span>今日の予定</b><span id="todayN"></span></div><div id="todayList"></div></div>
+  <div class="card"><div class="head"><b class="sectionTitle"><span class="sectionGlyph">☀️</span>今日の予定</b><div class="homeHeadActions"><span id="todayN"></span><button class="homePlus" id="homeQuickToggle" type="button">＋ 追加</button></div></div>
+<div class="homeQuick" id="homeQuick"><div class="homeQuickRow"><input id="homeQuickTime" inputmode="numeric" placeholder="時間 例 16:00"><input id="homeQuickTitle" placeholder="予定名"><button id="homeQuickAdd" type="button">追加</button></div><button class="homeDetailLink" id="homeFullAdd" type="button">詳細設定して追加 →</button></div>
+<div id="todayList"></div></div>
   <div class="card"><div class="head"><b class="sectionTitle"><span class="sectionGlyph deadlineGlyph">◆</span>締切</b><span id="taskN"></span></div><div id="tasks"></div><div class="privateNote">締切は <b>締切日＋あと何日</b> だけ。時間は塞がないよ。</div></div>
 </section>
 
@@ -429,6 +448,18 @@ body:before{
   </div>
 </section>
 </main>
+<div class="detailOverlay" id="detailOverlay" aria-hidden="true"><div class="detailSheet">
+  <div class="detailHandle"></div><div class="detailTop"><b>予定の詳細</b><button id="detailClose" type="button">×</button></div>
+  <div id="detailView"></div>
+  <div class="detailActions"><button id="detailEdit" type="button">編集</button><button id="detailDelete" class="danger" type="button">削除</button></div>
+  <div class="detailEditForm" id="detailEditForm">
+    <label>予定名</label><input class="field" id="editTitle">
+    <div class="row"><div><label>開始</label><input class="field" id="editStart"></div><div><label>終了</label><input class="field" id="editEnd"></div></div>
+    <label>メモ</label><textarea class="field editMemo" id="editMemo"></textarea>
+    <label>カラー</label><div class="editColors" id="editColors"></div>
+    <button class="detailSave" id="detailSave" type="button">変更を保存</button>
+  </div>
+</div></div>
 
 <nav class="nav cuteNav" aria-label="メインメニュー">
   <button type="button" class="active" data-tab="home"><span class="navIcon navHome" aria-hidden="true">⌂</span><span>ホーム</span></button>
@@ -735,18 +766,43 @@ function list(a,id,del=false,viewDate=null){
     let mainTime=carry?`〜${e.end}`:e.start;
     let meta=carry?`前日${e.start}から継続・${e.end}まで`:`${fmt(e.date)} ${e.start}〜${endLabel(e)}`;
     let action=del?`<button class="tiny" data-del-private="${e.id}">削除</button>`:'';
-    return `<div class="event" style="--event-color:${planColor(e)}"><div class="time">${mainTime}</div><div class="bar"></div><div><div class="title"><span class="eventColorMark"></span>${esc(e.title)}</div><div class="meta">${meta}</div></div>${action}</div>`
+    return `<div class="event" data-event-id="${e.id}" style="--event-color:${planColor(e)}"><div class="time">${mainTime}</div><div class="bar"></div><div><div class="title"><span class="eventColorMark"></span>${esc(e.title)}</div><div class="meta">${meta}</div></div>${action}</div>`
   }).join(''):'<div class="empty">今日は余白の日。</div>';
   if(del)x.querySelectorAll('[data-del-private]').forEach(b=>b.onclick=()=>{removeEvent(b.dataset.delPrivate);save();render();if(selectedDay)openDay(selectedDay)})
 }
+
+const encouragementA=['今日も','焦らず','軽やかに','ひとつずつ','自分らしく','無理せず','丁寧に','のびのび','気楽に','ゆっくり'];
+const encouragementB=['進めばいい。','自分のペースで。','小さく前へ。','いい日にしていこう。','できるところから。','余白も大切に。','目の前のひとつから。','今日を楽しもう。'];
+const encouragementC=['ちゃんと前に進んでるよ。','少しの積み重ねで十分。','今日の時間も大切に。'];
+function dayHash(s){let h=0;for(let c of s)h=(h*31+c.charCodeAt(0))>>>0;return h}
+function dailyMessage(state){let h=dayHash(todayKey+state),pool=[];encouragementA.forEach(a=>encouragementB.forEach(b=>pool.push(a+'、'+b)));encouragementC.forEach(c=>pool.push(c));return pool[h%pool.length]}
+function todaysUpcoming(a){
+  let n=new Date(),nm=n.getHours()*60+n.getMinutes();
+  return a.filter(e=>e.date===todayKey&&mins(e.start)>=nm).sort((x,y)=>mins(x.start)-mins(y.start))[0]||null
+}
+function remainingText(t){let nm=now.getHours()*60+now.getMinutes(),d=mins(t)-nm;if(d<=0)return 'まもなく';let h=Math.floor(d/60),m=d%60;return 'あと'+(h?h+'時間':'')+(m?m+'分':h?'':'0分')}
+let detailEventId=null,editColor='#4da8ff';
+function openEventDetail(id){
+  let e=ev.find(x=>String(x.id)===String(id));if(!e)return;detailEventId=e.id;editColor=planColor(e);
+  document.getElementById('detailView').innerHTML=`<div class="detailTitle"><span class="eventColorMark" style="--event-color:${planColor(e)}"></span>${esc(e.title)}</div><div class="detailInfo"><small>日時</small>${fmt(e.date)}　${e.start}〜${endLabel(e)}</div><div class="detailInfo"><small>メモ</small><div class="detailMemoBox">${e.memo?esc(e.memo):'<span class="subtle">メモはありません</span>'}</div></div>`;
+  document.getElementById('editTitle').value=e.title||'';document.getElementById('editStart').value=e.start||'';document.getElementById('editEnd').value=e.end||'';document.getElementById('editMemo').value=e.memo||'';
+  let colors=['#4da8ff','#8b78f6','#f58bb2','#66c79a','#f1c85b','#f2a15d'];document.getElementById('editColors').innerHTML=colors.map(c=>`<button type="button" class="editColor${c===editColor?' on':''}" data-edit-color="${c}" style="background:${c}"></button>`).join('');
+  document.querySelectorAll('[data-edit-color]').forEach(b=>b.onclick=()=>{editColor=b.dataset.editColor;document.querySelectorAll('[data-edit-color]').forEach(x=>x.classList.toggle('on',x.dataset.editColor===editColor))});
+  document.getElementById('detailEditForm').classList.remove('show');document.getElementById('detailOverlay').classList.add('show');document.getElementById('detailOverlay').setAttribute('aria-hidden','false')
+}
+function closeEventDetail(){document.getElementById('detailOverlay').classList.remove('show');document.getElementById('detailOverlay').setAttribute('aria-hidden','true')}
+function bindHomeEvents(){document.querySelectorAll('#todayList [data-event-id]').forEach(row=>row.onclick=e=>{if(e.target.closest('[data-del-private]'))return;openEventDetail(row.dataset.eventId)})}
+
 function home(){
   let a=allEvents().filter(e=>eventTouchesDay(e,todayKey));
-  let open=tasks.filter(t=>!t.done).sort((a,b)=>a.deadline.localeCompare(b.deadline));let homeTasks=tasks.filter(t=>!t.done||t.completedAt===todayKey).sort((a,b)=>(a.completedAt||a.deadline).localeCompare(b.completedAt||b.deadline));
+  let open=tasks.filter(t=>!t.done).sort((a,b)=>a.deadline.localeCompare(b.deadline));
+  let homeTasks=tasks.filter(t=>!t.done||t.completedAt===todayKey).sort((a,b)=>(a.completedAt||a.deadline).localeCompare(b.completedAt||b.deadline));
   document.getElementById('date').textContent=`${now.getMonth()+1}月${now.getDate()}日`;
-  let hero=document.getElementById('heroTitle');
-  if(hero)hero.textContent=a.length>=4?'今日はちょっとにぎやか。':a.length?'今日も、自分のペースで。':'今日は余白の日。';
-  document.getElementById('summary').textContent=a.length?`今日は${a.length}件の予定があるよ。${open.length?`締切は${open.length}件。`:''}`:open.length?`時間を使う予定はなし。締切は${open.length}件あるよ。`:'予定も締切もなし。ゆったりできそう！';
-  document.getElementById('todayN').textContent=`${a.length}件`;list(a,'todayList',true,todayKey);
+  let next=todaysUpcoming(a),hero=document.getElementById('heroTitle'),nt=document.getElementById('nextTime'),nl=document.getElementById('nextLabel');
+  if(next){nl.textContent='NEXT';hero.textContent=next.title;nt.textContent=`${next.start}から ・ ${remainingText(next.start)}`;document.getElementById('summary').textContent='✦ '+dailyMessage('next')}
+  else if(a.length){nl.textContent='TODAY';hero.textContent='今日の予定はすべて終了 ✓';nt.textContent='今日もおつかれさま。';document.getElementById('summary').textContent='✦ '+dailyMessage('done')}
+  else{nl.textContent='TODAY';hero.textContent='今日は余白の日。';nt.textContent=open.length?`締切 ${open.length}件`:'時間を使う予定はありません';document.getElementById('summary').textContent='✦ '+dailyMessage('free')}
+  document.getElementById('todayN').textContent=`${a.length}件`;list(a,'todayList',true,todayKey);bindHomeEvents();
   document.getElementById('taskN').textContent=`${homeTasks.length}件`;let el=document.getElementById('tasks');el.innerHTML=homeTasks.length?homeTasks.map(t=>renderTaskRow(t,todayKey,true)).join(''):'<div class="empty">締切なし。身軽だね。</div>';el.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>{let t=tasks.find(x=>x.id===b.dataset.done);t.done=true;t.completedAt=todayKey;save();render()})
 }
 function range(kind){let d=new Date();if(kind==='tomorrow')d.setDate(d.getDate()+1);if(kind==='today'||kind==='tomorrow')return[K(d),K(d)];let day=d.getDay(),delta=(day===0?-6:1-day);let shift=kind==='nextweek'?7:kind==='lastweek'?-7:0;d.setDate(d.getDate()+delta+shift);let a=K(d);d.setDate(d.getDate()+6);return[a,K(d)]}
@@ -843,6 +899,20 @@ document.getElementById('prev').onclick=()=>{if(--cm<0){cm=11;cy--}calendar();do
 document.getElementById('next').onclick=()=>{if(++cm>11){cm=0;cy++}calendar();document.getElementById('dayDetail').classList.remove('show')};
 function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id))}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>show(b.dataset.tab));
+
+document.getElementById('homeQuickToggle').onclick=()=>document.getElementById('homeQuick').classList.toggle('show');
+document.getElementById('homeFullAdd').onclick=()=>{show('add');type='single';singleY=now.getFullYear();singleM=now.getMonth();document.getElementById('dateInput').value=`${now.getMonth()+1}/${now.getDate()}`;renderSingleCal();document.getElementById('startInput').focus()};
+document.getElementById('homeQuickAdd').onclick=()=>{
+  let s=normTime(document.getElementById('homeQuickTime').value),title=document.getElementById('homeQuickTitle').value.trim();if(!s||!title){alert('時間と予定名を入れてね');return}
+  let endMin=mins(s)+60,end=`${pad(Math.floor((endMin%1440)/60))}:${pad(endMin%60)}`,off=endMin>=1440?1:0;
+  let x={id:String(Date.now()),date:todayKey,start:s,end,title,memo:'',recurrence:'single',endExplicit:false,endDayOffset:off,shared:false,groupId:null,color:'#4da8ff'};
+  let hits=riskFor(x);if(hits.length&&!confirm('近い予定があります。そのまま追加する？'))return;storeEvent(x);save();document.getElementById('homeQuickTime').value='';document.getElementById('homeQuickTitle').value='';document.getElementById('homeQuick').classList.remove('show');render()
+};
+document.getElementById('detailClose').onclick=closeEventDetail;document.getElementById('detailOverlay').onclick=e=>{if(e.target.id==='detailOverlay')closeEventDetail()};
+document.getElementById('detailEdit').onclick=()=>document.getElementById('detailEditForm').classList.toggle('show');
+document.getElementById('detailDelete').onclick=()=>{if(!detailEventId||!confirm('この予定を削除する？'))return;removeEvent(detailEventId);save();closeEventDetail();render()};
+document.getElementById('detailSave').onclick=()=>{let e=ev.find(x=>String(x.id)===String(detailEventId));if(!e)return;let s=normTime(document.getElementById('editStart').value),en=normTime(document.getElementById('editEnd').value);if(!s||!en||!document.getElementById('editTitle').value.trim()){alert('予定名・開始・終了時間を確認してね');return}e.title=document.getElementById('editTitle').value.trim();e.start=s;e.end=en;e.memo=document.getElementById('editMemo').value.trim();e.color=editColor;save();closeEventDetail();render()};
+
 function render(){home();calendar()}
 save();examples();renderSingleCal();render();
 </script>
