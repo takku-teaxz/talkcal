@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Timear Tester v6</title>
+<title>Timear Tester v7</title>
 <style>
 :root{--bg:#f7f7fb;--card:#fff;--ink:#252532;--muted:#8a8d98;--line:#e9e9f0;--p:#7468f6;--soft:#efefff}
 *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#efedff 0,#f8f8fc 30%,#f7f7fb 100%);font-family:system-ui,-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--ink)}
@@ -304,7 +304,7 @@ body:before{
 </style>
 </head>
 <body>
-<div class="versionBadge">Timear ・ TESTER 06</div>
+<div class="versionBadge">Timear ・ TESTER 07</div>
 <main class="app">
 <section id="home" class="screen active">
   <div class="top brandTop"><div><div class="brandEyebrow">Adding gentle color to your days.</div><img class="timearLogo" src="timear-logo.png" alt="Timear"></div></div>
@@ -900,6 +900,15 @@ document.getElementById('next').onclick=()=>{if(++cm>11){cm=0;cy++}calendar();do
 function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x.dataset.tab===id))}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>show(b.dataset.tab));
 
+document.getElementById('homeQuickTime').addEventListener('blur',e=>{
+  let n=normalizeTypedTime(e.target.value);if(n)e.target.value=n;
+});
+document.getElementById('homeQuickTime').addEventListener('keydown',e=>{
+  if(e.key==='Enter')document.getElementById('homeQuickTitle').focus();
+});
+document.getElementById('homeQuickTitle').addEventListener('keydown',e=>{
+  if(e.key==='Enter')document.getElementById('homeQuickAdd').click();
+});
 document.getElementById('homeQuickToggle').onclick=()=>document.getElementById('homeQuick').classList.toggle('show');
 document.getElementById('homeFullAdd').onclick=()=>{show('add');type='single';singleY=now.getFullYear();singleM=now.getMonth();document.getElementById('dateInput').value=`${now.getMonth()+1}/${now.getDate()}`;renderSingleCal();document.getElementById('startInput').focus()};
 document.getElementById('homeQuickAdd').onclick=()=>{
