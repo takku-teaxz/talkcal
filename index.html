@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Timear Tester v5</title>
+<title>Timear Tester v6</title>
 <style>
 :root{--bg:#f7f7fb;--card:#fff;--ink:#252532;--muted:#8a8d98;--line:#e9e9f0;--p:#7468f6;--soft:#efefff}
 *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#efedff 0,#f8f8fc 30%,#f7f7fb 100%);font-family:system-ui,-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--ink)}
@@ -304,7 +304,7 @@ body:before{
 </style>
 </head>
 <body>
-<div class="versionBadge">Timear ・ TESTER 05</div>
+<div class="versionBadge">Timear ・ TESTER 06</div>
 <main class="app">
 <section id="home" class="screen active">
   <div class="top brandTop"><div><div class="brandEyebrow">Adding gentle color to your days.</div><img class="timearLogo" src="timear-logo.png" alt="Timear"></div></div>
@@ -314,7 +314,7 @@ body:before{
     <div class="heroFooter"><span>● 予定</span><span>◆ 締切</span><span>🔒 自分だけの時間</span></div>
   </div>
   <div class="card"><div class="head"><b class="sectionTitle"><span class="sectionGlyph">☀️</span>今日の予定</b><div class="homeHeadActions"><span id="todayN"></span><button class="homePlus" id="homeQuickToggle" type="button">＋ 追加</button></div></div>
-<div class="homeQuick" id="homeQuick"><div class="homeQuickRow"><input class="field" id="homeQuickTime" inputmode="numeric" placeholder="時間 例 900 / 930 / 18"><input class="field" id="homeQuickTitle" placeholder="予定名"><button id="homeQuickAdd" type="button">追加</button></div><button class="homeDetailLink" id="homeFullAdd" type="button">詳細設定して追加 →</button></div>
+<div class="homeQuick" id="homeQuick"><div class="homeQuickRow"><input class="field" id="homeQuickTime" type="text" inputmode="numeric" autocomplete="off" placeholder="例：15:00" maxlength="5"><input class="field" id="homeQuickTitle" placeholder="予定名"><button id="homeQuickAdd" type="button">追加</button></div><button class="homeDetailLink" id="homeFullAdd" type="button">詳細設定して追加 →</button></div>
 <div id="todayList"></div></div>
   <div class="card"><div class="head"><b class="sectionTitle"><span class="sectionGlyph deadlineGlyph">◆</span>締切</b><span id="taskN"></span></div><div id="tasks"></div><div class="privateNote">締切は <b>締切日＋あと何日</b> だけ。時間は塞がないよ。</div></div>
 </section>
@@ -903,7 +903,7 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>show(b.dataset.
 document.getElementById('homeQuickToggle').onclick=()=>document.getElementById('homeQuick').classList.toggle('show');
 document.getElementById('homeFullAdd').onclick=()=>{show('add');type='single';singleY=now.getFullYear();singleM=now.getMonth();document.getElementById('dateInput').value=`${now.getMonth()+1}/${now.getDate()}`;renderSingleCal();document.getElementById('startInput').focus()};
 document.getElementById('homeQuickAdd').onclick=()=>{
-  let s=normTime(document.getElementById('homeQuickTime').value),title=document.getElementById('homeQuickTitle').value.trim();if(!s||!title){alert('時間と予定名を入れてね');return}
+  let s=normalizeTypedTime(document.getElementById('homeQuickTime').value),title=document.getElementById('homeQuickTitle').value.trim();if(!s||!title){alert('時間と予定名を入れてね');return}
   let endMin=mins(s)+60,end=`${pad(Math.floor((endMin%1440)/60))}:${pad(endMin%60)}`,off=endMin>=1440?1:0;
   let x={id:String(Date.now()),date:todayKey,start:s,end,title,memo:'',recurrence:'single',endExplicit:false,endDayOffset:off,shared:false,groupId:null,color:'#4da8ff'};
   let hits=riskFor(x);if(hits.length&&!confirm('近い予定があります。そのまま追加する？'))return;storeEvent(x);save();document.getElementById('homeQuickTime').value='';document.getElementById('homeQuickTitle').value='';document.getElementById('homeQuick').classList.remove('show');render()
@@ -911,7 +911,7 @@ document.getElementById('homeQuickAdd').onclick=()=>{
 document.getElementById('detailClose').onclick=closeEventDetail;document.getElementById('detailOverlay').onclick=e=>{if(e.target.id==='detailOverlay')closeEventDetail()};
 document.getElementById('detailEdit').onclick=()=>document.getElementById('detailEditForm').classList.toggle('show');
 document.getElementById('detailDelete').onclick=()=>{if(!detailEventId||!confirm('この予定を削除する？'))return;removeEvent(detailEventId);save();closeEventDetail();render()};
-document.getElementById('detailSave').onclick=()=>{let e=ev.find(x=>String(x.id)===String(detailEventId));if(!e)return;let s=normTime(document.getElementById('editStart').value),en=normTime(document.getElementById('editEnd').value);if(!s||!en||!document.getElementById('editTitle').value.trim()){alert('予定名・開始・終了時間を確認してね');return}e.title=document.getElementById('editTitle').value.trim();e.start=s;e.end=en;e.memo=document.getElementById('editMemo').value.trim();e.color=editColor;save();closeEventDetail();render()};
+document.getElementById('detailSave').onclick=()=>{let e=ev.find(x=>String(x.id)===String(detailEventId));if(!e)return;let s=normalizeTypedTime(document.getElementById('editStart').value),en=normalizeTypedTime(document.getElementById('editEnd').value);if(!s||!en||!document.getElementById('editTitle').value.trim()){alert('予定名・開始・終了時間を確認してね');return}e.title=document.getElementById('editTitle').value.trim();e.start=s;e.end=en;e.memo=document.getElementById('editMemo').value.trim();e.color=editColor;save();closeEventDetail();render()};
 
 function render(){home();calendar()}
 save();examples();renderSingleCal();render();
