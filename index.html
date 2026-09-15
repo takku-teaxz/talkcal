@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Timear Tester v2</title>
+<title>Timear Tester v3</title>
 <style>
 :root{--bg:#f7f7fb;--card:#fff;--ink:#252532;--muted:#8a8d98;--line:#e9e9f0;--p:#7468f6;--soft:#efefff}
 *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#efedff 0,#f8f8fc 30%,#f7f7fb 100%);font-family:system-ui,-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--ink)}
@@ -279,10 +279,15 @@ body:before{
 .brandEyebrow{color:#83afd0!important;letter-spacing:1.45px!important}
 @media(max-width:380px){.timearLogo{width:min(185px,56vw)}.timearLogoSmall{width:min(150px,45vw)}}
 
+
+/* Tester 03 — completed deadline history */
+.completedTask{opacity:.72}
+.completedTask .title{text-decoration:line-through;text-decoration-thickness:1px}
+
 </style>
 </head>
 <body>
-<div class="versionBadge">Timear ・ TESTER 02</div>
+<div class="versionBadge">Timear ・ TESTER 03</div>
 <main class="app">
 <section id="home" class="screen active">
   <div class="top brandTop"><div><div class="brandEyebrow">Adding gentle color to your days.</div><img class="timearLogo" src="timear-logo.png" alt="Timear"></div></div>
@@ -463,11 +468,11 @@ const save=()=>{
 };
 const allEvents=()=>ev.map(x=>({...x,shared:false,groupId:null}));
 const taskStart=t=>t.start||todayKey;
-function taskActiveOn(t,k){return !t.done&&taskStart(t)<=k&&k<=t.deadline}
+function taskActiveOn(t,k){let end=t.done?(t.completedAt||t.deadline):t.deadline;return taskStart(t)<=k&&k<=end}
 function taskDaysLeft(t,k){let a=new Date(k+'T00:00:00'),b=new Date(t.deadline+'T00:00:00');return Math.max(0,Math.round((b-a)/86400000))}
-function taskStatus(t,k){return k===t.deadline?'本日締切':`あと${taskDaysLeft(t,k)}日`}
+function taskStatus(t,k){if(t.done){let c=t.completedAt||t.deadline;return `${fmt(c)} 完了 ✓`}return k===t.deadline?'本日締切':`あと${taskDaysLeft(t,k)}日`}
 function activeTasksOn(k){return tasks.filter(t=>taskActiveOn(t,k))}
-function renderTaskRow(t,k,withDone=false){let today=k===todayKey;let status=taskStatus(t,k),c=planColor(t);return `<div class="event taskEvent" style="--event-color:${c}"><div class="time"><span class="eventColorMark"></span>◆</div><div class="bar"></div><div><div class="title">${esc(t.title)}</div><div class="taskMeta"><span class="deadlineStrong">${fmt(t.deadline)}締切</span> ・ <span class="${k===t.deadline?'deadlineToday':''}">${status}</span></div></div>${withDone?`<button class="tiny" data-done="${t.id}">完了</button>`:'<span></span>'}</div>`}
+function renderTaskRow(t,k,withDone=false){let today=k===todayKey;let status=taskStatus(t,k),c=planColor(t);return `<div class="event taskEvent${t.done?' completedTask':''}" style="--event-color:${c}"><div class="time"><span class="eventColorMark"></span>◆</div><div class="bar"></div><div><div class="title">${esc(t.title)}</div><div class="taskMeta"><span class="deadlineStrong">${fmt(t.deadline)}締切</span> ・ <span class="${k===t.deadline?'deadlineToday':''}">${status}</span></div></div>${withDone&&!t.done?`<button class="tiny" data-done="${t.id}">完了</button>`:'<span></span>'}</div>`}
 
 function privateConflictForShared(){return false}
 function storeEvent(x){ev.push({...x,shared:false,groupId:null})}
@@ -736,13 +741,13 @@ function list(a,id,del=false,viewDate=null){
 }
 function home(){
   let a=allEvents().filter(e=>eventTouchesDay(e,todayKey));
-  let open=tasks.filter(t=>!t.done).sort((a,b)=>a.deadline.localeCompare(b.deadline));
+  let open=tasks.filter(t=>!t.done).sort((a,b)=>a.deadline.localeCompare(b.deadline));let homeTasks=tasks.filter(t=>!t.done||t.completedAt===todayKey).sort((a,b)=>(a.completedAt||a.deadline).localeCompare(b.completedAt||b.deadline));
   document.getElementById('date').textContent=`${now.getMonth()+1}月${now.getDate()}日`;
   let hero=document.getElementById('heroTitle');
   if(hero)hero.textContent=a.length>=4?'今日はちょっとにぎやか。':a.length?'今日も、自分のペースで。':'今日は余白の日。';
   document.getElementById('summary').textContent=a.length?`今日は${a.length}件の予定があるよ。${open.length?`締切は${open.length}件。`:''}`:open.length?`時間を使う予定はなし。締切は${open.length}件あるよ。`:'予定も締切もなし。ゆったりできそう！';
   document.getElementById('todayN').textContent=`${a.length}件`;list(a,'todayList',true,todayKey);
-  document.getElementById('taskN').textContent=`${open.length}件`;let el=document.getElementById('tasks');el.innerHTML=open.length?open.map(t=>renderTaskRow(t,todayKey,true)).join(''):'<div class="empty">締切なし。身軽だね。</div>';el.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>{let t=tasks.find(x=>x.id===b.dataset.done);t.done=true;save();render()})
+  document.getElementById('taskN').textContent=`${homeTasks.length}件`;let el=document.getElementById('tasks');el.innerHTML=homeTasks.length?homeTasks.map(t=>renderTaskRow(t,todayKey,true)).join(''):'<div class="empty">締切なし。身軽だね。</div>';el.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>{let t=tasks.find(x=>x.id===b.dataset.done);t.done=true;t.completedAt=todayKey;save();render()})
 }
 function range(kind){let d=new Date();if(kind==='tomorrow')d.setDate(d.getDate()+1);if(kind==='today'||kind==='tomorrow')return[K(d),K(d)];let day=d.getDay(),delta=(day===0?-6:1-day);let shift=kind==='nextweek'?7:kind==='lastweek'?-7:0;d.setDate(d.getDate()+delta+shift);let a=K(d);d.setDate(d.getDate()+6);return[a,K(d)]}
 function extractAskedDate(q){
