@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>TalkCal v29</title>
+<title>TalkCal v30</title>
 <style>
 :root{--bg:#f7f7fb;--card:#fff;--ink:#252532;--muted:#8a8d98;--line:#e9e9f0;--p:#7468f6;--soft:#efefff}
 *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#efedff 0,#f8f8fc 30%,#f7f7fb 100%);font-family:system-ui,-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;color:var(--ink)}
@@ -251,10 +251,31 @@ body:before{
   .navIcon{width:34px;height:34px}
 }
 
+
+/* v30 — plan colors */
+.colorField{margin-top:15px}
+.colorField>label{display:block;margin-bottom:8px}
+.colorPicker{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.colorChoice{width:34px;height:34px;border-radius:50%;border:4px solid #fff;padding:0;
+  background:var(--swatch);box-shadow:0 0 0 1px #dfe8ef,0 4px 10px rgba(57,104,137,.10);
+  transition:transform .14s ease,box-shadow .14s ease}
+.colorChoice:nth-child(1){--swatch:#4da8ff}.colorChoice:nth-child(2){--swatch:#8b78f6}
+.colorChoice:nth-child(3){--swatch:#f58bb2}.colorChoice:nth-child(4){--swatch:#66c79a}
+.colorChoice:nth-child(5){--swatch:#f1c85b}.colorChoice:nth-child(6){--swatch:#f2a15d}
+.colorChoice.on{transform:scale(1.12);box-shadow:0 0 0 3px rgba(77,168,255,.22),0 5px 12px rgba(57,104,137,.14)}
+.event{--event-color:#4da8ff}
+.event .bar{background:var(--event-color)!important}
+.taskEvent .bar{background:var(--event-color)!important}
+.eventColorMark{width:12px;height:12px;border-radius:50%;background:var(--event-color);display:inline-block;margin-right:7px;vertical-align:-1px}
+.taskEvent .eventColorMark{border-radius:3px;transform:rotate(45deg)}
+.dot.colorDot{background:var(--mark-color)!important}
+.taskDiamond.colorDiamond{background:var(--mark-color)!important}
+.dayEvent .chatColor{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;background:var(--event-color)}
+
 </style>
 </head>
 <body>
-<div class="versionBadge">TalkCal v29 ・ SKY NAV</div>
+<div class="versionBadge">TalkCal v30 ・ COLOR PLANS</div>
 <main class="app">
 <section id="home" class="screen active">
   <div class="top brandTop"><div><div class="brandEyebrow">MY TIME COMPANION</div><div class="logo">Talk<i>Cal</i></div></div></div>
@@ -314,6 +335,17 @@ body:before{
     <div class="row">
       <div id="startFieldWrap"><label>時間</label><input class="field" id="startInput" type="text" inputmode="numeric" autocomplete="off" placeholder="例：15:00" maxlength="5"></div>
       <div><label>内容</label><input class="field" id="titleInput" autocomplete="off" placeholder="例：病院"></div>
+    </div>
+    <div class="colorField">
+      <label>カラー</label>
+      <div class="colorPicker" id="colorPicker" aria-label="予定カラー">
+        <button type="button" class="colorChoice on" data-color="#4da8ff" aria-label="水色"></button>
+        <button type="button" class="colorChoice" data-color="#8b78f6" aria-label="紫"></button>
+        <button type="button" class="colorChoice" data-color="#f58bb2" aria-label="ピンク"></button>
+        <button type="button" class="colorChoice" data-color="#66c79a" aria-label="緑"></button>
+        <button type="button" class="colorChoice" data-color="#f1c85b" aria-label="黄色"></button>
+        <button type="button" class="colorChoice" data-color="#f2a15d" aria-label="オレンジ"></button>
+      </div>
     </div>
     <div class="example" id="example"></div>
     <div class="notice" id="notice"></div>
@@ -416,6 +448,8 @@ let type='single', repeatKind='daily', cy=now.getFullYear(), cm=now.getMonth(), 
 let singleY=now.getFullYear(), singleM=now.getMonth();
 let bulkY=now.getFullYear(), bulkM=now.getMonth(), bulkDates=new Set(), weeklyDays=new Set();
 let pendingRisk=[];
+let selectedColor='#4da8ff';
+const planColor=x=>x.color||'#4da8ff';
 const save=()=>{
   localStorage.setItem('tc_hybrid_v2_ev',JSON.stringify(ev));
   localStorage.setItem('tc_hybrid_v2_tasks',JSON.stringify(tasks));
@@ -426,7 +460,7 @@ function taskActiveOn(t,k){return !t.done&&taskStart(t)<=k&&k<=t.deadline}
 function taskDaysLeft(t,k){let a=new Date(k+'T00:00:00'),b=new Date(t.deadline+'T00:00:00');return Math.max(0,Math.round((b-a)/86400000))}
 function taskStatus(t,k){return k===t.deadline?'本日締切':`あと${taskDaysLeft(t,k)}日`}
 function activeTasksOn(k){return tasks.filter(t=>taskActiveOn(t,k))}
-function renderTaskRow(t,k,withDone=false){let today=k===todayKey;let status=taskStatus(t,k);return `<div class="event taskEvent"><div class="time">◆</div><div class="bar"></div><div><div class="title">${esc(t.title)}</div><div class="taskMeta"><span class="deadlineStrong">${fmt(t.deadline)}締切</span> ・ <span class="${k===t.deadline?'deadlineToday':''}">${status}</span></div></div>${withDone?`<button class="tiny" data-done="${t.id}">完了</button>`:'<span></span>'}</div>`}
+function renderTaskRow(t,k,withDone=false){let today=k===todayKey;let status=taskStatus(t,k),c=planColor(t);return `<div class="event taskEvent" style="--event-color:${c}"><div class="time"><span class="eventColorMark"></span>◆</div><div class="bar"></div><div><div class="title">${esc(t.title)}</div><div class="taskMeta"><span class="deadlineStrong">${fmt(t.deadline)}締切</span> ・ <span class="${k===t.deadline?'deadlineToday':''}">${status}</span></div></div>${withDone?`<button class="tiny" data-done="${t.id}">完了</button>`:'<span></span>'}</div>`}
 
 function privateConflictForShared(){return false}
 function storeEvent(x){ev.push({...x,shared:false,groupId:null})}
@@ -518,7 +552,7 @@ function parseQuick(){
     let d=parseDateField(document.getElementById('dateInput').value);
     if(!d)return {error:'締切日を 9/25 のように入れてね'};
     if(!title)return {error:'内容を入れてね'};
-    return {kind:'deadline',deadline:d,title}
+    return {kind:'deadline',deadline:d,title,color:selectedColor}
   }
   let start=normalizeTypedTime(document.getElementById('startInput').value);
   if(!start)return {error:'時間を 15:00 のように入れてね'};
@@ -526,18 +560,18 @@ function parseQuick(){
   if(type==='single'){
     let d=parseDateField(document.getElementById('dateInput').value);
     if(!d)return {error:'日付を 9/20 のように入れてね'};
-    return {kind:'events',dates:[d],start,title,rule:'single'}
+    return {kind:'events',dates:[d],start,title,rule:'single',color:selectedColor}
   }
   if(type==='repeat'){
     let days=[...weeklyDays];
     if(repeatKind==='weekly'&&!days.length)return {error:'曜日を選んでね'};
     let dates=[],cur=addDays(new Date(),1),stop=addDays(new Date(),56);
     for(;cur<=stop;cur=addDays(cur,1))if(matchesRepeat(cur,repeatKind,days))dates.push(K(cur));
-    return {kind:'events',dates,start,title,rule:repeatKind}
+    return {kind:'events',dates,start,title,rule:repeatKind,color:selectedColor}
   }
   if(type==='bulk'){
     if(!bulkDates.size)return {error:'カレンダーから日付を選んでね'};
-    return {kind:'events',dates:[...bulkDates].sort(),start,title,rule:'bulk'}
+    return {kind:'events',dates:[...bulkDates].sort(),start,title,rule:'bulk',color:selectedColor}
   }
 }
 function riskFor(x){
@@ -579,7 +613,7 @@ function clearAddInput(){
 }
 function quickAdd(){
   let p=parseQuick();if(p.error){notice(p.error);return}
-  if(p.kind==='deadline'){tasks.push({id:String(Date.now()),title:p.title,deadline:p.deadline,start:todayKey,scope:'private',done:false});save();render();clearAddInput();notice('締切を追加したよ。締切日と残り日数を表示するね');return}
+  if(p.kind==='deadline'){tasks.push({id:String(Date.now()),title:p.title,deadline:p.deadline,start:todayKey,scope:'private',done:false,color:p.color});save();render();clearAddInput();notice('締切を追加したよ。締切日と残り日数を表示するね');return}
   let rawEnd=document.getElementById('endOverride').value.trim();
   let explicitEnd=rawEnd?normalizeTypedTime(rawEnd):'';
   if(rawEnd&&!explicitEnd){notice('終了時間は 09:00 のように入力してね');return}
@@ -589,7 +623,7 @@ function quickAdd(){
   if(explicitEnd&&endDayOffset===0&&mins(end)<=mins(p.start)){notice('当日終了なら、終了時間は開始より後にしてね。夜勤や泊まりは終了日を「翌日」にしてね');return}
   if(!explicitEnd&&endDayOffset>0){notice('翌日以降を選ぶときは終了時間も入れてね');return}
   let memo=document.getElementById('memo').value.trim(),safe=[];pendingRisk=[];
-  p.dates.forEach(date=>{let x={id:String(Date.now()+Math.random()),date,start:p.start,end,title:p.title,memo,recurrence:p.rule,endExplicit:!!explicitEnd,endDayOffset:explicitEnd?endDayOffset:0,shared:false,groupId:null};let hits=riskFor(x);hits.length?pendingRisk.push({x,hits}):safe.push(x)});
+  p.dates.forEach(date=>{let x={id:String(Date.now()+Math.random()),date,start:p.start,end,title:p.title,memo,recurrence:p.rule,endExplicit:!!explicitEnd,endDayOffset:explicitEnd?endDayOffset:0,shared:false,groupId:null,color:p.color};let hits=riskFor(x);hits.length?pendingRisk.push({x,hits}):safe.push(x)});
   safe.forEach(storeEvent);save();render();
   if(pendingRisk.length){renderConflict();notice(safe.length?`${safe.length}件は追加したよ。近い予定だけ確認してね`:'追加前に確認してね')}
   else{clearAddInput();renderConflict();notice(`${safe.length}件追加したよ`)}
@@ -689,7 +723,7 @@ function list(a,id,del=false,viewDate=null){
     let mainTime=carry?`〜${e.end}`:e.start;
     let meta=carry?`前日${e.start}から継続・${e.end}まで`:`${fmt(e.date)} ${e.start}〜${endLabel(e)}`;
     let action=del?`<button class="tiny" data-del-private="${e.id}">削除</button>`:'';
-    return `<div class="event"><div class="time">${mainTime}</div><div class="bar"></div><div><div class="title">${esc(e.title)}</div><div class="meta">${meta}</div></div>${action}</div>`
+    return `<div class="event" style="--event-color:${planColor(e)}"><div class="time">${mainTime}</div><div class="bar"></div><div><div class="title"><span class="eventColorMark"></span>${esc(e.title)}</div><div class="meta">${meta}</div></div>${action}</div>`
   }).join(''):'<div class="empty">今日は余白の日。</div>';
   if(del)x.querySelectorAll('[data-del-private]').forEach(b=>b.onclick=()=>{removeEvent(b.dataset.delPrivate);save();render();if(selectedDay)openDay(selectedDay)})
 }
@@ -745,7 +779,7 @@ function renderAnswer(data){
       gd=addDays(gd,1)
     }
     let head=data.from===data.to?`${fmt(data.from)}の予定`: `${fmt(data.from)}〜${fmt(data.to)}の予定`;
-    d.innerHTML=`<div class="answerHead">📅 ${head}</div>`+Object.entries(groups).map(([k,v])=>{let dt=new Date(k+'T00:00:00'),wd=['日','月','火','水','木','金','土'][dt.getDay()];return `<div class="dayGroup"><div class="dayLabel">${fmt(k)}<small>(${wd})</small></div><div class="dayItems">${v.items.map(e=>`<div class="dayEvent"><span>${e.date===k?`${e.start}〜${endLabel(e)}`:`前日から〜${e.end}`}</span><b>${esc(e.title)}</b></div>`).join('')}${v.tt.map(t=>`<div class="dayEvent"><span>◆ ${fmt(t.deadline)}締切・${taskStatus(t,k)}</span><b>${esc(t.title)}</b></div>`).join('')}</div></div>`}).join('')
+    d.innerHTML=`<div class="answerHead">📅 ${head}</div>`+Object.entries(groups).map(([k,v])=>{let dt=new Date(k+'T00:00:00'),wd=['日','月','火','水','木','金','土'][dt.getDay()];return `<div class="dayGroup"><div class="dayLabel">${fmt(k)}<small>(${wd})</small></div><div class="dayItems">${v.items.map(e=>`<div class="dayEvent" style="--event-color:${planColor(e)}"><span>${e.date===k?`${e.start}〜${endLabel(e)}`:`前日から〜${e.end}`}</span><b><span class="chatColor"></span>${esc(e.title)}</b></div>`).join('')}${v.tt.map(t=>`<div class="dayEvent"><span>◆ ${fmt(t.deadline)}締切・${taskStatus(t,k)}</span><b>${esc(t.title)}</b></div>`).join('')}</div></div>`}).join('')
   }
   c.appendChild(d);c.scrollTop=c.scrollHeight
 }
@@ -754,6 +788,7 @@ document.getElementById('chatForm').onsubmit=e=>{e.preventDefault();let q=docume
 document.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{message(b.textContent,true);renderAnswer(answerData(b.textContent))})
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{type=b.dataset.type;document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));examples()})
 document.querySelectorAll('.repeatKind').forEach(b=>b.onclick=()=>{repeatKind=b.dataset.repeat;document.querySelectorAll('.repeatKind').forEach(x=>x.classList.toggle('active',x===b));examples()})
+document.querySelectorAll('.colorChoice').forEach(b=>b.onclick=()=>{selectedColor=b.dataset.color;document.querySelectorAll('.colorChoice').forEach(x=>x.classList.toggle('on',x===b))})
 
 document.getElementById('startInput').addEventListener('blur',e=>{
   let n=normalizeTypedTime(e.target.value);if(n)e.target.value=n;
@@ -789,7 +824,7 @@ function openDay(k){
 function calendar(){
   document.getElementById('month').textContent=`${cy}年 ${cm+1}月`;let g=document.getElementById('grid');g.innerHTML='';let f=new Date(cy,cm,1).getDay(),last=new Date(cy,cm+1,0).getDate();
   for(let i=0;i<f;i++)g.appendChild(document.createElement('div'));
-  for(let d=1;d<=last;d++){let k=`${cy}-${pad(cm+1)}-${pad(d)}`,b=document.createElement('button');b.className='day'+(k===todayKey?' today':'')+(k===selectedDay?' selected':'');let items=allEvents().filter(e=>eventTouchesDay(e,k));let marks=`${items.length?'<span class="dot"></span>':''}${activeTasksOn(k).length?'<span class="taskDiamond"></span>':''}`;b.innerHTML=`${d}${marks?`<div class="dots">${marks}</div>`:''}`;b.onclick=()=>openDay(k);g.appendChild(b)}
+  for(let d=1;d<=last;d++){let k=`${cy}-${pad(cm+1)}-${pad(d)}`,b=document.createElement('button');b.className='day'+(k===todayKey?' today':'')+(k===selectedDay?' selected':'');let items=allEvents().filter(e=>eventTouchesDay(e,k)),dayTasks=activeTasksOn(k);let eventColors=[...new Set(items.map(planColor))].slice(0,4),taskColors=[...new Set(dayTasks.map(planColor))].slice(0,3);let marks=eventColors.map(c=>`<span class="dot colorDot" style="--mark-color:${c}"></span>`).join('')+taskColors.map(c=>`<span class="taskDiamond colorDiamond" style="--mark-color:${c}"></span>`).join('');b.innerHTML=`${d}${marks?`<div class="dots">${marks}</div>`:''}`;b.onclick=()=>openDay(k);g.appendChild(b)}
 }
 document.getElementById('addForDay').onclick=()=>{if(!selectedDay)return;type='single';document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.type==='single'));examples();show('add');document.getElementById('dateInput').value=`${+selectedDay.slice(5,7)}/${+selectedDay.slice(8,10)}`;singleY=+selectedDay.slice(0,4);singleM=+selectedDay.slice(5,7)-1;renderSingleCal();document.getElementById('startInput').focus()};
 document.getElementById('prev').onclick=()=>{if(--cm<0){cm=11;cy--}calendar();document.getElementById('dayDetail').classList.remove('show')};
